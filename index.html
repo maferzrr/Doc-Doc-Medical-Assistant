@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doc-Doc | Asistente Médico & Triaje Inteligente</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Google Fonts: Inter -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            pastel: {
+              blue: '#E0F2FE',
+              blueDark: '#0284C7',
+              blueHover: '#0369A1',
+              green: '#DCFCE7',
+              greenDark: '#16A34A',
+              bg: '#F8FAFC',
+              card: '#FFFFFF',
+              yellow: '#FEF08A',
+              yellowDark: '#CA8A04',
+              red: '#FEE2E2',
+              redDark: '#DC2626'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Estilos personalizados para el simulador de teléfono */
+    body { font-family: 'Inter', sans-serif; }
+    .chat-scroll::-webkit-scrollbar { width: 4px; }
+    .chat-scroll::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
+    .animate-fadeIn { animation: fadeIn 0.3s ease-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body class="h-full flex items-center justify-center p-0 md:p-4 bg-slate-900">
+
+  <!-- Marco simulador de Teléfono Móvil -->
+  <div class="w-full max-w-md h-full md:h-[840px] bg-white md:rounded-[40px] shadow-2xl flex flex-column flex-col overflow-hidden relative border-0 md:border-8 border-slate-800">
+    
+    <!-- Barra de Estado Simulada (Top Notch) -->
+    <div class="bg-sky-700 text-white text-xs px-6 pt-2 pb-1 flex justify-between items-center font-medium select-none">
+      <span>09:41</span>
+      <div class="flex items-center gap-1.5">
+        <i class="fa-solid fa-signal"></i>
+        <i class="fa-solid fa-wifi"></i>
+        <i class="fa-solid fa-battery-full"></i>
+      </div>
+    </div>
+
+    <!-- HEADER / BARRA SUPERIOR FIJA DE DOC-DOC -->
+    <header class="bg-sky-600 text-white px-4 py-3 flex items-center justify-between shadow-sm z-20">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white font-black text-lg border border-white/30">
+          <i class="fa-solid fa-user-doctor"></i>
+        </div>
+        <div>
+          <h1 class="font-extrabold text-lg leading-none tracking-tight">Doc-Doc</h1>
+          <span class="text-[10px] text-sky-100 font-medium">Asistente Médico Informativo</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="switchTab('tab-perfil')" class="w-8 h-8 rounded-full bg-sky-500 hover:bg-sky-400 flex items-center justify-center text-xs text-white transition-colors" title="Perfil de Usuario">
+          <i class="fa-solid fa-user"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- ÁREA PRINCIPAL CONTENEDORA DE VISTAS (TAB CONTENT) -->
+    <main class="flex-1 bg-slate-50 overflow-hidden relative">
+
+      <!-- ==================== PESTAÑA 1: CHATBOT Y TRIAJE ==================== -->
+      <section id="tab-chat" class="h-full flex flex-col transition-all duration-300">
+        
+        <!-- Modal / Banner del Disclaimer (Aviso Legal) -->
+        <div id="disclaimer-banner" class="bg-amber-50 border-b border-amber-200 p-3 text-xs text-amber-900 flex items-start gap-2.5 z-10 animate-fadeIn">
+          <i class="fa-solid fa-triangle-exclamation text-amber-600 text-base mt-0.5 shrink-0"></i>
+          <div class="flex-1">
+            <p class="font-semibold mb-0.5">Aviso Legal Importante</p>
+            <p class="text-[11px] leading-snug text-amber-800">Doc-Doc ofrece orientación informativa y no sustituye un diagnóstico ni consulta médica profesional. En emergencias graves llame al 123.</p>
+          </div>
+          <button onclick="cerrarDisclaimer()" class="text-amber-600 hover:text-amber-900 font-bold px-1">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Mensajes del Chat -->
+        <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3.5 chat-scroll">
+          <!-- Mensaje de bienvenida del bot -->
+          <div class="flex gap-2.5 items-start animate-fadeIn">
+            <div class="w-8 h-8 rounded-full bg-sky-600 text-white flex items-center justify-center text-xs shrink-0 mt-1 shadow-sm">
+              <i class="fa-solid fa-robot"></i>
+            </div>
+            <div class="bg-white border border-slate-200 text-slate-800 p-3.5 rounded-2xl rounded-tl-xs shadow-sm max-w-[85%] text-xs leading-relaxed">
+              <p class="font-bold text-sky-800 mb-1">¡Hola! Soy Doc-Doc 👋</p>
+              <p>Tu asistente médico informativo. ¿En qué puedo orientarte hoy? Selecciona una opción o describe tus síntomas.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones interactivos rápidos / Opciones de selección -->
+        <div id="chat-quick-options" class="p-2.5 bg-white border-t border-slate-100 flex gap-2 overflow-x-auto text-xs chat-scroll">
+          <button onclick="iniciarSintoma('dolor_pecho')" class="shrink-0 bg-red-50 hover:bg-red-100 text-red-700 font-medium px-3 py-1.5 rounded-full border border-red-200 flex items-center gap-1.5 transition-all">
+            <i class="fa-solid fa-heart-pulse"></i> Dolor de Pecho
+          </button>
+          <button onclick="iniciarSintoma('dolor_cabeza')" class="shrink-0 bg-sky-50 hover:bg-sky-100 text-sky-800 font-medium px-3 py-1.5 rounded-full border border-sky-200 flex items-center gap-1.5 transition-all">
+            <i class="fa-solid fa-brain"></i> Dolor de Cabeza
+          </button>
+          <button onclick="iniciarSintoma('resfriado')" class="shrink-0 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-medium px-3 py-1.5 rounded-full border border-emerald-200 flex items-center gap-1.5 transition-all">
+            <i class="fa-solid fa-head-side-cough"></i> Fiebre o Gripa
+          </button>
+        </div>
+
+        <!-- Input de Texto para Chatbot -->
+        <div class="p-3 bg-white border-t border-slate-200 flex items-center gap-2">
+          <input type="text" id="chat-input" placeholder="Escribe tu síntoma o duda..." class="flex-1 bg-slate-100 border border-slate-200 rounded-full px-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500" onkeypress="if(event.key==='Enter') enviarMensajeUsuario()">
+          <button onclick="enviarMensajeUsuario()" class="w-8 h-8 rounded-full bg-sky-600 hover:bg-sky-700 text-white flex items-center justify-center text-xs transition-colors shrink-0">
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </div>
+      </section>
+
+      <!-- ==================== PESTAÑA 2: VERIFICADOR DE MEDICAMENTOS ==================== -->
+      <section id="tab-medicamentos" class="h-full hidden flex-col p-4 overflow-y-auto chat-scroll bg-slate-50">
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm mb-4">
+          <div class="flex items-center gap-2.5 mb-2">
+            <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-pills"></i>
+            </div>
+            <div>
+              <h2 class="font-bold text-slate-800 text-sm">Verificador de Interacciones</h2>
+              <p class="text-[11px] text-slate-500">Selecciona 2 o más fármacos para verificar su compatibilidad.</p>
+            </div>
+          </div>
+
+          <!-- Selector de Fármacos -->
+          <div class="mt-3">
+            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Agregar Medicamento:</label>
+            <div class="flex gap-2">
+              <select id="select-medicamento" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                <option value="">-- Seleccionar fármaco --</option>
+                <option value="Ibuprofeno">Ibuprofeno</option>
+                <option value="Paracetamol">Paracetamol</option>
+                <option value="Aspirina">Aspirina (Ácido Acetilsalicílico)</option>
+                <option value="Alcohol">Consumo de Alcohol</option>
+                <option value="Warfarina">Warfarina (Anticoagulante)</option>
+              </select>
+              <button onclick="agregarMedicamentoAComparar()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1">
+                <i class="fa-solid fa-plus"></i> Añadir
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lista de Medicamentos Seleccionados -->
+        <div class="mb-4">
+          <h3 class="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Fármacos a comparar:</h3>
+          <div id="lista-meds-comparar" class="flex flex-wrap gap-2">
+            <span class="text-xs text-slate-400 italic">No has seleccionado medicamentos.</span>
+          </div>
+        </div>
+
+        <!-- Botón Evaluar -->
+        <button onclick="evaluarInteracciones()" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md shadow-sky-200 transition-all mb-4 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-shield-halved"></i> Evaluar Compatibilidad
+        </button>
+
+        <!-- Contenedor del Resultado -->
+        <div id="resultado-interaccion" class="hidden animate-fadeIn"></div>
+      </section>
+
+      <!-- ==================== PESTAÑA 3: DIARIO & SEGUIMIENTO ==================== -->
+      <section id="tab-diario" class="h-full hidden flex-col p-4 overflow-y-auto chat-scroll bg-slate-50">
+        <div class="flex justify-between items-center mb-3">
+          <div>
+            <h2 class="font-bold text-slate-800 text-sm">Diario de Síntomas</h2>
+            <p class="text-[11px] text-slate-500">Historial y evolución de tu estado de salud.</p>
+          </div>
+          <button onclick="abrirModalNuevoSintoma()" class="bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold px-3 py-1.5 rounded-xl flex items-center gap-1">
+            <i class="fa-solid fa-plus"></i> Registrar
+          </button>
+        </div>
+
+        <!-- Bucle de Seguimiento Activo (Simulado) -->
+        <div id="banner-seguimiento" class="bg-sky-50 border border-sky-200 p-3.5 rounded-2xl mb-4 animate-fadeIn">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-flex items-center justify-center w-2 h-2 rounded-full bg-sky-500 animate-ping"></span>
+            <span class="text-xs font-bold text-sky-900">Seguimiento de Control (24h)</span>
+          </div>
+          <p class="text-xs text-sky-800 mb-3">¿Cómo ha evolucionado tu síntoma de <strong>"Dolor de Cabeza"</strong> registrado ayer?</p>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="responderSeguimiento('mejoro')" class="bg-emerald-600 text-white py-1.5 rounded-xl text-[11px] font-semibold hover:bg-emerald-700 transition-colors">
+              <i class="fa-solid fa-face-smile"></i> Mejoró
+            </button>
+            <button onclick="responderSeguimiento('igual')" class="bg-slate-600 text-white py-1.5 rounded-xl text-[11px] font-semibold hover:bg-slate-700 transition-colors">
+              <i class="fa-solid fa-face-meh"></i> Igual
+            </button>
+            <button onclick="responderSeguimiento('empeoro')" class="bg-red-600 text-white py-1.5 rounded-xl text-[11px] font-semibold hover:bg-red-700 transition-colors">
+              <i class="fa-solid fa-face-frown"></i> Empeoró
+            </button>
+          </div>
+        </div>
+
+        <!-- Historial de Registros -->
+        <h3 class="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Historial Reciente</h3>
+        <div id="historial-diario-lista" class="space-y-2.5">
+          <!-- Entrada 1 -->
+          <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-slate-800">Dolor de Cabeza</span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">Amarillo</span>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-0.5">Intensidad: 6/10 • Ayer 10:30 AM</p>
+            </div>
+            <i class="fa-solid fa-chevron-right text-slate-300 text-xs"></i>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== PESTAÑA 4: DIRECTORIO DE SALUD Y MAPA ==================== -->
+      <section id="tab-directorio" class="h-full hidden flex-col p-4 overflow-y-auto chat-scroll bg-slate-50">
+        <div class="mb-3">
+          <h2 class="font-bold text-slate-800 text-sm">Directorio & Mapa de Salud</h2>
+          <p class="text-[11px] text-slate-500">Centros de atención y farmacias cercanas a tu ubicación.</p>
+        </div>
+
+        <!-- Mapa Simulado -->
+        <div class="w-full h-40 bg-sky-100 rounded-2xl border border-sky-200 relative overflow-hidden mb-4 flex items-center justify-center">
+          <!-- Grid de fondo del mapa -->
+          <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#0284c7_1px,transparent_1px)] [background-size:12px_12px]"></div>
+          <!-- Pins en el mapa -->
+          <div class="absolute top-8 left-12 text-red-600 text-lg animate-bounce" title="Hospital de Urgencias">
+            <i class="fa-solid fa-location-dot"></i>
+          </div>
+          <div class="absolute bottom-10 right-16 text-emerald-600 text-base" title="Farmacia 24h">
+            <i class="fa-solid fa-location-dot"></i>
+          </div>
+          <div class="bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-200 shadow-sm text-xs font-semibold text-slate-700 flex items-center gap-1.5 z-10">
+            <i class="fa-solid fa-crosshairs text-sky-600"></i> Bogotá, Colombia
+          </div>
+        </div>
+
+        <!-- Lista de Ubicaciones -->
+        <h3 class="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Centros Cercanos</h3>
+        <div class="space-y-2.5">
+          <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center">
+            <div class="flex items-start gap-2.5">
+              <div class="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5">
+                <i class="fa-solid fa-hospital"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-800">Hospital San José - Urgencias</p>
+                <p class="text-[11px] text-slate-500">Abierto 24 Horas • A 1.2 km</p>
+              </div>
+            </div>
+            <a href="tel:123" class="bg-red-50 text-red-600 hover:bg-red-100 p-2 rounded-xl text-xs font-bold border border-red-200">
+              <i class="fa-solid fa-phone"></i>
+            </a>
+          </div>
+
+          <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center">
+            <div class="flex items-start gap-2.5">
+              <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+                <i class="fa-solid fa-prescription-bottle-medical"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-800">Farmacia Cruz Verde - Turno</p>
+                <p class="text-[11px] text-slate-500">Atención 24 Horas • A 450m</p>
+              </div>
+            </div>
+            <span class="text-xs text-emerald-600 font-semibold bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200">Abierta</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== PESTAÑA PERFIL ==================== -->
+      <section id="tab-perfil" class="h-full hidden flex-col p-4 overflow-y-auto chat-scroll bg-slate-50">
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center mb-4">
+          <div class="w-16 h-16 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center text-2xl font-bold mx-auto mb-2 border-2 border-sky-300">
+            C
+          </div>
+          <h2 class="font-bold text-slate-800 text-sm">Carlos Vivanco</h2>
+          <p class="text-[11px] text-slate-500">28 años • Bogotá, Colombia</p>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+          <h3 class="text-xs font-bold text-slate-700 border-b border-slate-100 pb-2">Datos Clínicos Rápidos</h3>
+          <div class="text-xs space-y-1.5 text-slate-600">
+            <p><strong>Alergias:</strong> Penicilina</p>
+            <p><strong>Condiciones:</strong> Ninguna declarada</p>
+            <p><strong>Contacto Emergencia:</strong> Maria Zetina (+57 300 000 0000)</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- NAVEGACIÓN INFERIOR (TAB BAR) -->
+    <nav class="bg-white border-t border-slate-200 px-3 py-2 flex justify-around items-center z-20">
+      <button onclick="switchTab('tab-chat')" id="nav-tab-chat" class="flex flex-col items-center gap-0.5 text-sky-600 font-semibold text-[10px] transition-colors">
+        <i class="fa-solid fa-comments text-base"></i>
+        <span>Triaje Chat</span>
+      </button>
+
+      <button onclick="switchTab('tab-medicamentos')" id="nav-tab-medicamentos" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-sky-600 text-[10px] transition-colors">
+        <i class="fa-solid fa-pills text-base"></i>
+        <span>Fármacos</span>
+      </button>
+
+      <button onclick="switchTab('tab-diario')" id="nav-tab-diario" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-sky-600 text-[10px] transition-colors">
+        <i class="fa-solid fa-calendar-check text-base"></i>
+        <span>Diario</span>
+      </button>
+
+      <button onclick="switchTab('tab-directorio')" id="nav-tab-directorio" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-sky-600 text-[10px] transition-colors">
+        <i class="fa-solid fa-map-location-dot text-base"></i>
+        <span>Directorio</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- LÓGICA DE LA APLICACIÓN DOC-DOC -->
+  <script>
+    // --- BASES DE DATOS LOCALES JSON (In-Memory) ---
+    const DB_MEDICAMENTOS = {
+      "Ibuprofeno": {
+        incompatibles: ["Aspirina", "Warfarina"],
+        advertencia: "Riesgo alto de hemorragia gástrica si se combina con otros AINEs o anticoagulantes."
+      },
+      "Paracetamol": {
+        incompatibles: ["Alcohol"],
+        advertencia: "Riesgo de daño hepático elevado si se combina con consumo excesivo de alcohol."
+      },
+      "Aspirina": {
+        incompatibles: ["Ibuprofeno", "Warfarina"],
+        advertencia: "Aumenta significativamente el riesgo de sangrado."
+      },
+      "Alcohol": {
+        incompatibles: ["Paracetamol"],
+        advertencia: "Incompatible con analgésicos de procesamiento hepático."
+      },
+      "Warfarina": {
+        incompatibles: ["Ibuprofeno", "Aspirina"],
+        advertencia: "Anticoagulante crítico. Evitar AINEs sin supervisión."
+      }
+    };
+
+    let medicamentosSeleccionados = [];
+
+    // --- CAMBIO DE PESTAÑAS (NAVIGATION) ---
+    function switchTab(tabId) {
+      const tabs = ['tab-chat', 'tab-medicamentos', 'tab-diario', 'tab-directorio', 'tab-perfil'];
+      tabs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+      document.getElementById(tabId).classList.remove('hidden');
+      document.getElementById(tabId).classList.add('flex');
+
+      // Actualizar colores de barra inferior
+      const navIds = ['chat', 'medicamentos', 'diario', 'directorio'];
+      navIds.forEach(id => {
+        const btn = document.getElementById(`nav-tab-${id}`);
+        if (btn) {
+          if (`tab-${id}` === tabId) {
+            btn.className = "flex flex-col items-center gap-0.5 text-sky-600 font-semibold text-[10px] transition-colors";
+          } else {
+            btn.className = "flex flex-col items-center gap-0.5 text-slate-400 hover:text-sky-600 text-[10px] transition-colors";
+          }
+        }
+      });
+    }
+
+    function cerrarDisclaimer() {
+      document.getElementById('disclaimer-banner').style.display = 'none';
+    }
+
+    // --- LÓGICA CHATBOT Y TRIAJE ---
+    function agregarMensaje(remitente, htmlContenido) {
+      const contenedor = document.getElementById('chat-messages');
+      const div = document.createElement('div');
+      div.className = 'animate-fadeIn';
+
+      if (remitente === 'bot') {
+        div.innerHTML = `
+          <div class="flex gap-2.5 items-start">
+            <div class="w-8 h-8 rounded-full bg-sky-600 text-white flex items-center justify-center text-xs shrink-0 mt-1 shadow-sm">
+              <i class="fa-solid fa-robot"></i>
+            </div>
+            <div class="bg-white border border-slate-200 text-slate-800 p-3.5 rounded-2xl rounded-tl-xs shadow-sm max-w-[85%] text-xs leading-relaxed">
+              ${htmlContenido}
+            </div>
+          </div>
+        `;
+      } else {
+        div.innerHTML = `
+          <div class="flex justify-end">
+            <div class="bg-sky-600 text-white p-3 rounded-2xl rounded-tr-xs shadow-sm max-w-[80%] text-xs leading-relaxed">
+              ${htmlContenido}
+            </div>
+          </div>
+        `;
+      }
+
+      contenedor.appendChild(div);
+      contenedor.scrollTop = contenedor.scrollHeight;
+    }
+
+    function iniciarSintoma(tipo) {
+      if (tipo === 'dolor_pecho') {
+        agregarMensaje('usuario', 'Siento dolor en el pecho');
+        setTimeout(() => {
+          // Evaluación inmediata por regla determinista (SEÑAL DE ALARMA -> ROJO)
+          generarTarjetaTriaje('Rojo', 'Atención Inmediata de Urgencias', 'Se detectó una señal de alarma crítica (Dolor Torácico). Podría indicar un evento cardiovascular grave.');
+        }, 600);
+      } else if (tipo === 'dolor_cabeza') {
+        agregarMensaje('usuario', 'Tengo dolor de cabeza');
+        setTimeout(() => {
+          agregarMensaje('bot', `
+            <p class="font-bold mb-1">Evaluación de Dolor de Cabeza:</p>
+            <p class="mb-2">¿El dolor vino acompañado de fiebre alta, confusión o rigidez en el cuello?</p>
+            <div class="flex gap-2 mt-2">
+              <button onclick="responderPreguntaCefalea(true)" class="bg-red-100 text-red-700 font-bold px-3 py-1 rounded-lg text-xs">Sí</button>
+              <button onclick="responderPreguntaCefalea(false)" class="bg-sky-100 text-sky-800 font-bold px-3 py-1 rounded-lg text-xs">No</button>
+            </div>
+          `);
+        }, 600);
+      } else if (tipo === 'resfriado') {
+        agregarMensaje('usuario', 'Tengo malestar general y congestión');
+        setTimeout(() => {
+          generarTarjetaTriaje('Verde', 'Cuidados en Casa', 'Síntomas compatibles con resfriado común o alergia leve. Mantenga hidratación y reposo.');
+        }, 600);
+      }
+    }
+
+    function responderPreguntaCefalea(tieneAlarma) {
+      if (tieneAlarma) {
+        generarTarjetaTriaje('Rojo', 'Urgencias Necesarias', 'La combinación de cefalea con fiebre alta o rigidez nucal requiere evaluación médica urgente.');
+      } else {
+        generarTarjetaTriaje('Amarillo', 'Consulta Médica General', 'Se sugiere programar una cita con un médico general en las próximas 24 horas si el dolor persiste.');
+      }
+    }
+
+    function generarTarjetaTriaje(color, titulo, descripcion) {
+      let badgeStyle = '', cardBg = '', btnAction = '';
+
+      if (color === 'Rojo') {
+        badgeStyle = 'bg-red-100 text-red-700 border-red-200';
+        cardBg = 'border-red-300 bg-red-50/50';
+        btnAction = `
+          <a href="tel:123" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-md shadow-red-200 transition-all">
+            <i class="fa-solid fa-phone-volume"></i> LLAMAR A URGENCIAS (123)
+          </a>
+        `;
+      } else if (color === 'Amarillo') {
+        badgeStyle = 'bg-amber-100 text-amber-800 border-amber-200';
+        cardBg = 'border-amber-300 bg-amber-50/50';
+        btnAction = `
+          <button onclick="switchTab('tab-directorio')" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-2 transition-all">
+            <i class="fa-solid fa-map-pin"></i> Ver Centros Médicos Cercanos
+          </button>
+        `;
+      } else {
+        badgeStyle = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+        cardBg = 'border-emerald-300 bg-emerald-50/50';
+        btnAction = `
+          <button onclick="switchTab('tab-diario')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-2 transition-all">
+            <i class="fa-solid fa-plus"></i> Guardar en Diario de Síntomas
+          </button>
+        `;
+      }
+
+      const htmlTarjeta = `
+        <div class="p-3.5 rounded-2xl border ${cardBg} space-y-2 mt-1">
+          <div class="flex justify-between items-center">
+            <span class="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border ${badgeStyle}">
+              Semáforo ${color}
+            </span>
+            <i class="fa-solid fa-shield-heart text-slate-400"></i>
+          </div>
+          <h4 class="font-bold text-slate-900 text-xs">${titulo}</h4>
+          <p class="text-[11px] text-slate-700 leading-snug">${descripcion}</p>
+          <div class="pt-1">
+            ${btnAction}
+          </div>
+        </div>
+      `;
+
+      agregarMensaje('bot', htmlTarjeta);
+    }
+
+    function enviarMensajeUsuario() {
+      const input = document.getElementById('chat-input');
+      const texto = input.value.trim();
+      if (!texto) return;
+
+      agregarMensaje('usuario', texto);
+      input.value = '';
+
+      setTimeout(() => {
+        if (texto.toLowerCase().includes('pecho') || texto.toLowerCase().includes('infarto')) {
+          iniciarSintoma('dolor_pecho');
+        } else if (texto.toLowerCase().includes('cabeza')) {
+          iniciarSintoma('dolor_cabeza');
+        } else {
+          generarTarjetaTriaje('Verde', 'Orientación General', 'Basado en tu descripción, mantente en observación e hidratación. Ante cualquier signo de alarma acude al médico.');
+        }
+      }, 700);
+    }
+
+    // --- LÓGICA VERIFICADOR DE MEDICAMENTOS ---
+    function agregarMedicamentoAComparar() {
+      const select = document.getElementById('select-medicamento');
+      const med = select.value;
+      if (!med) return;
+
+      if (!medicamentosSeleccionados.includes(med)) {
+        medicamentosSeleccionados.push(med);
+        actualizarListaMedsUI();
+      }
+      select.value = '';
+    }
+
+    function actualizarListaMedsUI() {
+      const contenedor = document.getElementById('lista-meds-comparar');
+      if (medicamentosSeleccionados.length === 0) {
+        contenedor.innerHTML = '<span class="text-xs text-slate-400 italic">No has seleccionado medicamentos.</span>';
+        return;
+      }
+
+      contenedor.innerHTML = medicamentosSeleccionados.map(m => `
+        <span class="inline-flex items-center gap-1.5 bg-sky-100 text-sky-800 text-xs px-2.5 py-1 rounded-full border border-sky-200 font-semibold">
+          ${m}
+          <button onclick="eliminarMed('${m}')" class="text-sky-600 hover:text-sky-900 font-bold">×</button>
+        </span>
+      `).join('');
+    }
+
+    function eliminarMed(med) {
+      medicamentosSeleccionados = medicamentosSeleccionados.filter(m => m !== med);
+      actualizarListaMedsUI();
+    }
+
+    function evaluarInteracciones() {
+      const resContainer = document.getElementById('resultado-interaccion');
+      resContainer.classList.remove('hidden');
+
+      if (medicamentosSeleccionados.length < 2) {
+        resContainer.innerHTML = `
+          <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl text-xs text-amber-800">
+            Por favor selecciona al menos 2 medicamentos o sustancias para evaluar la interacción.
+          </div>
+        `;
+        return;
+      }
+
+      let hayConflictoGrave = false;
+      let advertencias = [];
+
+      for (let i = 0; i < medicamentosSeleccionados.length; i++) {
+        for (let j = i + 1; j < medicamentosSeleccionados.length; j++) {
+          const medA = medicamentosSeleccionados[i];
+          const medB = medicamentosSeleccionados[j];
+
+          if (DB_MEDICAMENTOS[medA] && DB_MEDICAMENTOS[medA].incompatibles.includes(medB)) {
+            hayConflictoGrave = true;
+            advertencias.push(`<strong>${medA}</strong> + <strong>${medB}</strong>: ${DB_MEDICAMENTOS[medA].advertencia}`);
+          }
+        }
+      }
+
+      if (hayConflictoGrave) {
+        resContainer.innerHTML = `
+          <div class="bg-red-50 border border-red-300 p-3.5 rounded-2xl text-xs space-y-2">
+            <div class="flex items-center gap-2 text-red-700 font-bold">
+              <i class="fa-solid fa-triangle-exclamation text-base"></i>
+              <span>¡Interacción Grave Detectada!</span>
+            </div>
+            <p class="text-red-900 text-[11px] leading-relaxed">No se recomienda la combinación de estos fármacos sin supervisión médica explícita:</p>
+            <ul class="list-disc pl-4 text-[11px] text-red-800 space-y-1">
+              ${advertencias.map(a => `<li>${a}</li>`).join('')}
+            </ul>
+          </div>
+        `;
+      } else {
+        resContainer.innerHTML = `
+          <div class="bg-emerald-50 border border-emerald-300 p-3.5 rounded-2xl text-xs space-y-1.5 text-emerald-800">
+            <div class="flex items-center gap-2 text-emerald-700 font-bold">
+              <i class="fa-solid fa-circle-check text-base"></i>
+              <span>Sin Interacciones Graves Conocidas</span>
+            </div>
+            <p class="text-[11px]">No se encontraron incompatibilidades directas registradas en el catálogo básico. Administrar bajo dosis estándar.</p>
+          </div>
+        `;
+      }
+    }
+
+    // --- LÓGICA BUCLE DE SEGUIMIENTO ---
+    function responderSeguimiento(respuesta) {
+      const banner = document.getElementById('banner-seguimiento');
+      if (respuesta === 'empeoro') {
+        banner.innerHTML = `
+          <div class="text-xs text-red-800 font-bold mb-1">
+            <i class="fa-solid fa-triangle-exclamation text-red-600"></i> Escalando Triaje a Nivel AMARILLO
+          </div>
+          <p class="text-[11px] text-red-700 mb-2">Debido al empeoramiento reportado, se sugiere consultar a un médico.</p>
+          <button onclick="switchTab('tab-directorio')" class="bg-red-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold">
+            Ver Hospitales Cercanos
+          </button>
+        `;
+        banner.className = "bg-red-50 border border-red-300 p-3.5 rounded-2xl mb-4";
+      } else {
+        banner.innerHTML = `
+          <div class="text-xs text-emerald-800 font-bold">
+            <i class="fa-solid fa-circle-check text-emerald-600"></i> ¡Gracias por tu reporte!
+          </div>
+          <p class="text-[11px] text-emerald-700">Continuamos monitoreando tu evolución.</p>
+        `;
+        banner.className = "bg-emerald-50 border border-emerald-300 p-3.5 rounded-2xl mb-4";
+      }
+    }
+
+    function abrirModalNuevoSintoma() {
+      alert("Para registrar un síntoma nuevo inicia una consulta en la pestaña 'Triaje Chat'.");
+      switchTab('tab-chat');
+    }
+  </script>
+</body>
+</html>

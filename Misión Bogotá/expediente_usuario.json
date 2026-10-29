@@ -1,0 +1,31 @@
+{
+  "usuario": {
+    "id_usuario": "usr_98471",
+    "edad": 28,
+    "genero": "Femenino",
+    "embarazo": false,
+    "enfermedades_cronicas": ["Asma leve"],
+    "alergias": ["Penicilina"],
+    "medicamentos_actuales": ["Salbutamol"],
+    "contactos_emergencia": [
+      {
+        "nombre": "Familiar de contacto",
+        "telefono": "+573000000000"
+      }
+    ]
+  },
+  "historial_consultas": [
+    {
+      "id_consulta": "cons_001",
+      "fecha": "2026-10-30T10:30:00Z",
+      "sintoma_reportado": "Dolor de cabeza",
+      "triaje_inicial": "Verde",
+      "estado_seguimiento": {
+        "programado_para": "2026-10-31T10:30:00Z",
+        "respuesta_usuario": "Empeoró",
+        "triaje_actualizado": "Amarillo",
+        "observacion": "El sistema escaló automáticamente el triaje de Verde a Amarillo debido al reporte de empeoramiento en el seguimiento a las 24 horas."
+      }
+    }
+  ]
+}

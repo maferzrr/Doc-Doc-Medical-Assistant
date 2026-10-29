@@ -1,0 +1,45 @@
+{
+  "flujos_sintomas": [
+    {
+      "id_sintoma": "sintoma_dolor_pecho",
+      "nombre_principal": "Dolor en el pecho o tórax",
+      "evaluacion_inmediata": {
+        "condicion_alarma": true,
+        "triaje_asignado": "Rojo",
+        "mensaje_critico": "Se detectó una señal de alarma crítica (dolor torácico). Podría tratarse de un evento cardíaco.",
+        "accion": "Activar botón de llamada de emergencia inmediata al 123 y alertar contactos."
+      }
+    },
+    {
+      "id_sintoma": "sintoma_cefalea",
+      "nombre_principal": "Dolor de cabeza (Cefalea)",
+      "preguntas_guiadas": [
+        {
+          "id_pregunta": 1,
+          "texto": "¿El dolor de cabeza vino acompañado de fiebre alta, confusión o rigidez en el cuello?",
+          "opciones": ["Sí", "No"],
+          "resultado_si": {
+            "triaje": "Rojo",
+            "mensaje": "Acude a urgencias inmediatamente. Podría indicar una condición neurológica grave."
+          },
+          "resultado_no": {
+            "siguiente_pregunta": 2
+          }
+        },
+        {
+          "id_pregunta": 2,
+          "texto": "¿Desde hace cuánto tiempo presenta el dolor de cabeza de manera intensa?",
+          "opciones": ["Menos de 24 horas de inicio súbito", "Más de 3 días gradual"],
+          "resultado_opcion_1": {
+            "triaje": "Amarillo",
+            "mensaje": "Se recomienda consultar a un médico general dentro de las próximas 24 horas y revisar el mapa de centros de salud."
+          },
+          "resultado_opcion_2": {
+            "triaje": "Verde",
+            "mensaje": "Puede gestionar cuidados en casa con hidratación y reposo. Programe seguimiento en 24-48 horas."
+          }
+        }
+      ]
+    }
+  ]
+}

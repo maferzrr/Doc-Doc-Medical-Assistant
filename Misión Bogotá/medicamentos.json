@@ -1,0 +1,28 @@
+{
+  "medicamentos": [
+    {
+      "id": "med_001",
+      "nombre": "Ibuprofeno",
+      "forma_farmaceutica": "Tableta 400mg o 600mg",
+      "interacciones_graves": ["Aspirina", "Anticoagulantes orales", "Warfarina"],
+      "interacciones_moderadas": ["Alcohol", "Antihipertensivos"],
+      "advertencia": "Puede aumentar el riesgo de sangrado estomacal y elevar la presión arterial si se combina con AINEs o anticoagulantes."
+    },
+    {
+      "id": "med_002",
+      "nombre": "Paracetamol",
+      "forma_farmaceutica": "Tableta 500mg o 1g",
+      "interacciones_graves": ["Alcohol (consumo crónico o excesivo)"],
+      "interacciones_moderadas": ["Warfarina (uso prolongado)"],
+      "advertencia": "El consumo simultáneo con alcohol incrementa significativamente el riesgo de daño hepático grave."
+    },
+    {
+      "id": "med_003",
+      "nombre": "Aspirina (Ácido Acetilsalicílico)",
+      "forma_farmaceutica": "Tableta 100mg o 500mg",
+      "interacciones_graves": ["Ibuprofeno", "Anticoagulantes", "Corticosteroides"],
+      "interacciones_moderadas": ["Alcohol"],
+      "advertencia": "Riesgo elevado de úlcera gástrica y hemorragias al combinarse con otros antiinflamatorios o anticoagulantes."
+    }
+  ]
+}

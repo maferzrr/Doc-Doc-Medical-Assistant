@@ -1,1 +1,1 @@
-# Doc-Doc-Medical-Assistant
+# Doc-Doc Medical Assistant

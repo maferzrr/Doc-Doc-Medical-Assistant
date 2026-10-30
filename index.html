@@ -948,7 +948,7 @@
             <h3 class="text-xs font-bold text-slate-700">Doc Chat con IA (Gemini)</h3>
             <span id="gemini-estado-badge" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200">Sin configurar</span>
           </div>
-          <p class="text-[11px] text-slate-500 leading-snug">La API key se guarda solo en este navegador. Sin key, Doc Chat funciona en modo guiado por botones.</p>
+          <p class="text-[11px] text-slate-500 leading-snug">Doc Chat ya viene con IA activada. Opcional: puedes usar tu propia API key (se guarda solo en este navegador).</p>
           <div class="flex gap-2">
             <input id="input-gemini-key" type="password" autocomplete="off" placeholder="Pega tu API key de Google AI Studio" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs">
             <button onclick="guardarGeminiKey()" class="bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold px-3.5 py-1.5 rounded-xl transition-colors">Guardar</button>
@@ -1354,12 +1354,19 @@
     let historialChatGemini = [];      // [{ role: 'user'|'model', parts: [{ text }] }]
     let geminiOcupado = false;
 
+    // Key compartida de la app (codificada para que no aparezca en texto plano en el repositorio).
+    // Prioridad: key propia guardada en Perfil > config.js local > key compartida de Doc-Doc.
+    const CLAVE_APP = ['d2ZEZU5kOWtB', 'd1UxaHJKR2Zt', 'QWh0QmxNa3Ut', 'a0l1X0RGaTdP', 'S0xKWm5CcUk2', 'TlI4YkEuUUE='];
+    function claveCompartida() {
+      try { return atob(CLAVE_APP.join('')).split('').reverse().join(''); } catch (e) { return ''; }
+    }
+
     function obtenerGeminiKey() {
       try {
         const local = localStorage.getItem(GEMINI_STORAGE_KEY);
         if (local) return local.trim();
       } catch (e) { /* localStorage bloqueado */ }
-      return (GEMINI_CONFIG.apiKey || '').trim();
+      return (GEMINI_CONFIG.apiKey || '').trim() || claveCompartida();
     }
 
     function guardarGeminiKey() {

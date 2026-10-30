@@ -1343,10 +1343,10 @@
     const GEMINI_CONFIG = Object.assign({
       apiKey: '',
       // Primero el más rápido (RNF-06: < 2.5 s por turno); si uno está saturado (503) se reintenta y luego se pasa al siguiente.
-      modelos: ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-flash-lite-latest'],
+      modelos: ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-flash-lite-latest', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite'],
       esperaRespaldoMs: 3500,   // si el modelo principal tarda más, se lanza el de respaldo en paralelo
       reintentosPorModelo: 2,
-      timeoutMs: 9000
+      timeoutMs: 7000
     }, window.DOC_DOC_CONFIG || {});
 
     const GEMINI_STORAGE_KEY = 'docdoc_gemini_api_key';
@@ -1466,6 +1466,7 @@ TU OBJETIVO
 Entender bien lo que le pasa a la persona con una entrevista corta e inteligente, y darle una orientación útil y segura: qué tan urgente es (semáforo), qué podría estar pasando, qué puede hacer ahora, a quién acudir y qué vigilar.
 
 CÓMO HACES LA ENTREVISTA
+0. NUNCA inventes ni supongas datos que el usuario no dijo (duración, empeoramiento, fiebre, etc.). Usa sus palabras exactas al resumir.
 1. Lee TODO lo que el usuario ya dijo y el expediente. NUNCA preguntes algo que ya sabes (si dijo "desde ayer", no preguntes desde cuándo; si marcó dolor 6/10, no preguntes intensidad).
 2. Usa el método ALICIA para decidir qué te falta: Aparición (cuándo y cómo empezó), Localización, Intensidad, Características (tipo de dolor/síntoma), Irradiación, Atenuantes/agravantes; más síntomas acompañantes y antecedentes relevantes.
 3. Pregunta solo lo que cambia la decisión. Puedes juntar hasta 2 preguntas muy relacionadas en un mismo turno. Prioriza descartar señales de alarma específicas del síntoma (ej. abdominal: fiebre, vómito persistente, sangre, dolor que no deja moverse, embarazo posible; cabeza: inicio súbito, rigidez de cuello, debilidad, alteración visual; respiratorio: dificultad para hablar, labios morados; fiebre: duración, manchas en la piel, confusión).
@@ -1477,7 +1478,8 @@ CUANDO CIERRAS (finalizado=true)
 - triaje: "Rojo" = urgencias YA o llamar al 123; "Amarillo" = ver a un médico en menos de 24 h (cita prioritaria en su EPS o consulta externa); "Verde" = manejo en casa y seguimiento a las 24-48 h.
 - Ante la duda entre dos niveles, eliges el MÁS grave. Si hay cualquier señal de alarma, Rojo sin esperar a terminar la entrevista.
 - "respuesta": 2 a 4 frases que resuman lo que entendiste y el siguiente paso concreto. Personalízalo con lo que te contó.
-- titulo: nombre claro del cuadro (ej. "Probable gastritis o dispepsia"); descripcion: 1-2 frases en lenguaje sencillo.
+- Cada campo va en SU propio campo del JSON: no metas causas, cuidados ni señales dentro del título.
+- titulo: nombre claro del cuadro en máximo 8 palabras (ej. "Probable gastritis o dispepsia"); descripcion: 1-2 frases en lenguaje sencillo.
 - causas: 2-3 posibles causas, de la más probable a la menos, en palabras sencillas (nunca como diagnóstico seguro).
 - cuidados: 3-5 acciones concretas y prácticas para hoy (alimentación, hidratación, reposo, postura, frío/calor, qué evitar). Puedes mencionar que pregunte en la droguería por un medicamento de venta libre por su nombre genérico SOLO si es seguro con sus alergias, enfermedades y medicamentos actuales; NUNCA des dosis, NUNCA sugieras antibióticos ni medicamentos con fórmula.
 - senales_alarma: 2-4 señales concretas por las que debe ir a urgencias si aparecen.
@@ -1635,6 +1637,28 @@ Responde SIEMPRE con el JSON del esquema.`;
       enviarTextoChat(btn.dataset.texto || btn.textContent);
     }
 
+    // Si un modelo de respaldo metió causas/cuidados/etc. dentro del título, los separa en sus campos.
+    function repararCierre(json) {
+      const t = String(json.titulo || '');
+      if (!/(Causas?|Cuidados|Señales de alarma|Para el médico)\s*:/i.test(t)) return json;
+      const seccion = nombre => {
+        const m = t.match(new RegExp(nombre + '\\s*:\\s*([\\s\\S]*?)(?=(Causas?|Cuidados|Señales de alarma|Para el médico|Especialidad)\\s*:|$)', 'i'));
+        return m ? m[1].trim().replace(/\.$/, '') : '';
+      };
+      const lista = s => s ? s.split(/;|,\s(?=[A-ZÁÉÍÓÚÑ])|\.\s/).map(x => x.trim()).filter(Boolean) : [];
+      const antes = t.split(/(Causas?|Cuidados|Señales de alarma|Para el médico)\s*:/i)[0].trim();
+      const [primera, ...resto] = antes.split(/\.\s+/);
+      return Object.assign({}, json, {
+        titulo: primera,
+        descripcion: json.descripcion || resto.join('. '),
+        causas: json.causas?.length ? json.causas : lista(seccion('Causas?')),
+        cuidados: json.cuidados?.length ? json.cuidados : lista(seccion('Cuidados')),
+        senales_alarma: json.senales_alarma?.length ? json.senales_alarma : lista(seccion('Señales de alarma')),
+        para_el_medico: json.para_el_medico || seccion('Para el médico'),
+        especialidad: json.especialidad || seccion('Especialidad') || 'Medicina General'
+      });
+    }
+
     function tituloCorto(t) {
       t = String(t || '').trim();
       if (!t) return 'Orientación de Doc Chat';
@@ -1709,6 +1733,7 @@ Responde SIEMPRE con el JSON del esquema.`;
         }
 
         if (cierra) {
+          Object.assign(json, repararCierre(json));
           generarTarjetaTriaje(
             color || 'Amarillo',
             escaparHTML(tituloCorto(json.titulo)),

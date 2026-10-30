@@ -2208,6 +2208,15 @@ ${textoIngles}` }] }],
       return null;
     }
 
+    // Ordena el resumen: cada sección (**Título:**) en su propio párrafo y cada viñeta en su línea.
+    function formatearResumenFDA(texto) {
+      return String(texto).split(/(?=\*\*[^*]+:\*\*)/).map(sec => {
+        const partes = sec.split(/\s*(?:\n|^)\s*[-•*]\s+|(?:\s+|(?<=[.:!?]))-\s+(?=[A-ZÁÉÍÓÚÑ¿])/).map(s => s.trim()).filter(Boolean);
+        const [cabeza, ...items] = partes;
+        return `<p>${formatearTextoBot(cabeza)}</p>` + (items.length ? `<ul class="list-disc pl-4 space-y-0.5">${items.map(i => `<li>${formatearTextoBot(i)}</li>`).join('')}</ul>` : '');
+      }).join('');
+    }
+
     function capitalizar(t) { return t.replace(/\b\w/g, c => c.toUpperCase()); }
 
     // Busca en el catálogo local (en español) una advertencia para el mismo fármaco.
@@ -2269,7 +2278,7 @@ ${textoIngles}` }] }],
           <p class="font-bold text-slate-800">${escaparHTML(nombreEs)} <span class="font-normal text-slate-400">· FDA</span></p>
           ${corregido}
           ${resumenEs
-            ? `<p class="leading-relaxed">${formatearTextoBot(resumenEs)}</p>`
+            ? `<div class="leading-relaxed space-y-1">${formatearResumenFDA(resumenEs)}</div>`
             : (local
                 ? `<p><b>Advertencia:</b> ${escaparHTML(local)}</p>`
                 : `<p>Este medicamento está registrado en la FDA. Para ver el resumen en español activa la IA en <b>Perfil → Doc Chat con IA</b>.</p>`)}

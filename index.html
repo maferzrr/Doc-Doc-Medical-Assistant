@@ -1343,9 +1343,10 @@
     const GEMINI_CONFIG = Object.assign({
       apiKey: '',
       // Primero el más rápido (RNF-06: < 2.5 s por turno); si uno está saturado (503) se reintenta y luego se pasa al siguiente.
-      modelos: ['gemini-2.5-flash', 'gemini-3.5-flash-lite', 'gemini-2.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-flash-lite-latest'],
+      modelos: ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-flash-lite-latest'],
+      esperaRespaldoMs: 3500,   // si el modelo principal tarda más, se lanza el de respaldo en paralelo
       reintentosPorModelo: 2,
-      timeoutMs: 10000
+      timeoutMs: 9000
     }, window.DOC_DOC_CONFIG || {});
 
     const GEMINI_STORAGE_KEY = 'docdoc_gemini_api_key';
@@ -1515,13 +1516,13 @@ Responde SIEMPRE con el JSON del esquema.`;
         opciones:       { type: 'ARRAY', items: { type: 'STRING' }, description: 'De 0 a 4 respuestas cortas sugeridas.' },
         finalizado:     { type: 'BOOLEAN' },
         triaje:         { type: 'STRING', enum: ['Ninguno', 'Verde', 'Amarillo', 'Rojo'] },
-        titulo:         { type: 'STRING' },
-        descripcion:    { type: 'STRING' },
-        causas:         { type: 'ARRAY', items: { type: 'STRING' } },
-        cuidados:       { type: 'ARRAY', items: { type: 'STRING' } },
-        senales_alarma: { type: 'ARRAY', items: { type: 'STRING' } },
-        para_el_medico: { type: 'STRING' },
-        especialidad:   { type: 'STRING' }
+        titulo:         { type: 'STRING', description: 'Nombre corto del cuadro, máximo 8 palabras.' },
+        descripcion:    { type: 'STRING', description: '1 o 2 frases sencillas.' },
+        causas:         { type: 'ARRAY', items: { type: 'STRING' }, description: '2-3 posibles causas, una por elemento.' },
+        cuidados:       { type: 'ARRAY', items: { type: 'STRING' }, description: '3-5 acciones concretas, una por elemento.' },
+        senales_alarma: { type: 'ARRAY', items: { type: 'STRING' }, description: '2-4 señales para ir a urgencias.' },
+        para_el_medico: { type: 'STRING', description: '1-2 frases con datos clave para el médico.' },
+        especialidad:   { type: 'STRING', description: 'A quién acudir, 1-3 palabras.' }
       },
       required: ['respuesta', 'finalizado', 'triaje']
     };
@@ -1568,9 +1569,10 @@ Responde SIEMPRE con el JSON del esquema.`;
 
     const esperar = ms => new Promise(r => setTimeout(r, ms));
 
-    async function consultarGemini(apiKey) {
-      let ultimoError = null;
-      for (const modelo of GEMINI_CONFIG.modelos) {
+    // Recorre una lista de modelos en orden, con reintentos si Google responde "saturado".
+    async function cadenaModelos(modelos, apiKey) {
+      let ultimoError = new Error('Sin modelos disponibles');
+      for (const modelo of modelos) {
         for (let intento = 1; intento <= (GEMINI_CONFIG.reintentosPorModelo || 1); intento++) {
           try {
             return await llamarGemini(modelo, apiKey);
@@ -1578,13 +1580,35 @@ Responde SIEMPRE con el JSON del esquema.`;
             ultimoError = e;
             console.warn(`[Doc-Doc] Falló ${modelo} (intento ${intento}):`, e.message);
             if (e.status === 401 || e.status === 403) throw e;          // key inválida: no tiene caso seguir
-            const saturado = [429, 500, 503].includes(e.status);
-            if (!saturado) break;                                        // timeout, 404, JSON...: siguiente modelo
-            await esperar(400 * intento);                                // saturación temporal: reintenta
+            if (![429, 500, 503].includes(e.status)) break;              // timeout, 404, JSON...: siguiente modelo
+            await esperar(300 * intento);                                // saturación temporal: reintenta
           }
         }
       }
       throw ultimoError;
+    }
+
+    // Modelo principal (más inteligente) y, si tarda o falla, modelos de respaldo EN PARALELO. Gana el primero que responda bien.
+    function consultarGemini(apiKey) {
+      const [principal, ...respaldo] = GEMINI_CONFIG.modelos;
+      return new Promise((resolve, reject) => {
+        let terminado = false, fallos = 0, lanzados = 1, respaldoIniciado = false, ultimoError = null;
+        const exito = v => { if (!terminado) { terminado = true; clearTimeout(timer); resolve(v); } };
+        const fallo = e => {
+          if (terminado) return;
+          fallos++; ultimoError = e;
+          if (e.status === 401 || e.status === 403) { terminado = true; clearTimeout(timer); reject(e); return; }
+          if (!respaldoIniciado && respaldo.length) iniciarRespaldo();
+          else if (fallos >= lanzados) { terminado = true; reject(ultimoError); }
+        };
+        const iniciarRespaldo = () => {
+          if (respaldoIniciado || terminado || !respaldo.length) return;
+          respaldoIniciado = true; lanzados = 2;
+          cadenaModelos(respaldo, apiKey).then(exito, fallo);
+        };
+        const timer = setTimeout(iniciarRespaldo, GEMINI_CONFIG.esperaRespaldoMs || 3500);
+        cadenaModelos([principal], apiKey).then(exito, fallo);
+      });
     }
 
     function mostrarEscribiendo() {
@@ -1609,6 +1633,14 @@ Responde SIEMPRE con el JSON del esquema.`;
       const contenedor = btn.closest('.opciones-rapidas');
       if (contenedor) contenedor.remove();
       enviarTextoChat(btn.dataset.texto || btn.textContent);
+    }
+
+    function tituloCorto(t) {
+      t = String(t || '').trim();
+      if (!t) return 'Orientación de Doc Chat';
+      if (t.length <= 70) return t;
+      const primera = t.split(/[.:;(]/)[0].trim();
+      return (primera.length <= 70 ? primera : primera.slice(0, 67).replace(/\s+\S*$/, '') + '…');
     }
 
     function nuevaConsultaChat() {
@@ -1679,7 +1711,7 @@ Responde SIEMPRE con el JSON del esquema.`;
         if (cierra) {
           generarTarjetaTriaje(
             color || 'Amarillo',
-            escaparHTML(json.titulo || 'Orientación de Doc Chat'),
+            escaparHTML(tituloCorto(json.titulo)),
             escaparHTML(json.descripcion || ''),
             (json.causas || []).map(escaparHTML),
             (json.cuidados || []).map(escaparHTML),

@@ -2043,7 +2043,42 @@ Responde SIEMPRE con el JSON del esquema.`;
         resContainer.innerHTML = '<div class="bg-amber-50 border border-amber-200 p-3 rounded-xl text-xs text-amber-800">Selecciona al menos 2 medicamentos.</div>';
         return;
       }
-      resContainer.innerHTML = '<div class="bg-emerald-50 border border-emerald-300 p-3 rounded-xl text-xs text-emerald-800"><b>Compatibilidad evaluada:</b> Sin interacciones graves detectadas en el catálogo local.</div>';
+      // RN-05: cotejar cada par contra el catálogo local -> Grave / Moderada / Compatible
+      const graves = [], moderadas = [], advertencias = new Set();
+      const meds = medicamentosSeleccionados;
+      for (let i = 0; i < meds.length; i++) {
+        for (let j = i + 1; j < meds.length; j++) {
+          const a = DB_MEDICAMENTOS[meds[i]] || {}, b = DB_MEDICAMENTOS[meds[j]] || {};
+          const par = `${meds[i]} + ${meds[j]}`;
+          if ((a.incompatibles_graves || []).includes(meds[j]) || (b.incompatibles_graves || []).includes(meds[i])) {
+            graves.push(par); if (a.advertencia) advertencias.add(a.advertencia); if (b.advertencia) advertencias.add(b.advertencia);
+          } else if ((a.incompatibles_moderadas || []).includes(meds[j]) || (b.incompatibles_moderadas || []).includes(meds[i])) {
+            moderadas.push(par);
+          }
+        }
+      }
+      const alergia = meds.filter(m => expedienteUsuario.alergias.some(al => normalizarTexto(al) === normalizarTexto(m)));
+      const listaAdv = [...advertencias].map(t => `<li>${escaparHTML(t)}</li>`).join('');
+      let html = '';
+      if (graves.length) {
+        html = `<div class="bg-red-50 border border-red-300 p-3 rounded-xl text-xs text-red-800 space-y-1.5">
+          <p class="font-black uppercase">⛔ Incompatible / Grave</p>
+          <p><b>No combinar:</b> ${graves.map(escaparHTML).join(', ')}</p>
+          ${moderadas.length ? `<p><b>Precaución:</b> ${moderadas.map(escaparHTML).join(', ')}</p>` : ''}
+          ${listaAdv ? `<ul class="list-disc pl-4 space-y-0.5">${listaAdv}</ul>` : ''}
+          <p class="font-semibold">Consulta a tu médico o farmacéutico antes de tomarlos juntos.</p></div>`;
+      } else if (moderadas.length) {
+        html = `<div class="bg-amber-50 border border-amber-300 p-3 rounded-xl text-xs text-amber-900 space-y-1.5">
+          <p class="font-black uppercase">⚠️ Precaución / Moderada</p>
+          <p><b>Combinación con riesgo:</b> ${moderadas.map(escaparHTML).join(', ')}</p>
+          <p>Pregunta a tu farmacéutico cómo espaciarlos o si hay una alternativa.</p></div>`;
+      } else {
+        html = `<div class="bg-emerald-50 border border-emerald-300 p-3 rounded-xl text-xs text-emerald-800">
+          <p class="font-black uppercase">✅ Compatible / Segura</p>
+          <p>No hay interacciones registradas entre estos medicamentos en el catálogo de Doc-Doc.</p></div>`;
+      }
+      if (alergia.length) html += `<div class="bg-red-50 border border-red-300 p-3 rounded-xl text-xs text-red-800 mt-2"><b>Alergia registrada:</b> tu perfil indica alergia a ${alergia.map(escaparHTML).join(', ')}.</div>`;
+      resContainer.innerHTML = html;
     }
 
     // ---------- OpenFDA (pública, no requiere API key) ----------

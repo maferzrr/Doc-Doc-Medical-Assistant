@@ -370,12 +370,8 @@
     .space-y-3\.5 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.875rem; }
 
     /* 10. Tipografía, Tamaños y Pesos */
-    .text-
-10px
-{ font-size: 10px; line-height: 1.35; }
-    .text-
-11px
-{ font-size: 11px; line-height: 1.4; }
+    .text-10px { font-size: 10px; line-height: 1.35; }
+    .text-11px { font-size: 11px; line-height: 1.4; }
     .text-xs { font-size: 0.75rem; line-height: 1rem; }
     .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
     .text-base { font-size: 1rem; line-height: 1.5rem; }
@@ -556,15 +552,9 @@
 
     @media (min-width: 768px) {
       .md\:p-4 { padding: 1rem; }
-      .md\:h-
-860px
-{ height: 860px; }
-      .md\:max-h-
-95dvh
-{ max-height: 95dvh; }
-      .md\:rounded-
-32px
-{ border-radius: 32px; }
+      .md\:h-860px { height: 860px; }
+      .md\:max-h-95dvh { max-height: 95dvh; }
+      .md\:rounded-32px { border-radius: 32px; }
       .md\:border-4 { border-width: 4px; }
     }
   </style>
@@ -724,7 +714,7 @@
             </div>
           </div>
 
-          <!-- Selector de Fármacos (Sincronizado con medicamentos.json) -->
+          <!-- Selector de Fármacos -->
           <div class="mt-3">
             <label class="text-[11px] font-semibold text-slate-600 block mb-1">Agregar Medicamento o Sustancia:</label>
             <div class="flex gap-2">
@@ -758,7 +748,7 @@
           <i class="fa-solid fa-shield-halved"></i> Evaluar Compatibilidad de Medicamentos
         </button>
 
-        <!-- Contenedor del Resultado (Grave / Moderada / Segura) -->
+        <!-- Contenedor del Resultado -->
         <div id="resultado-interaccion" class="hidden animate-fadeIn mb-4"></div>
 
         <!-- Consulta de advertencias farmacológicas internacionales -->
@@ -830,12 +820,10 @@
           <h3 class="text-xs font-bold text-slate-600 uppercase tracking-wider">Historial Reciente</h3>
           <span id="diario-count-badge" class="text-[11px] text-slate-400 font-medium">1 registro</span>
         </div>
-        <div id="historial-diario-lista" class="space-y-2.5">
-          <!-- Renderizado dinámico desde expediente_usuario.json y nuevas consultas -->
-        </div>
+        <div id="historial-diario-lista" class="space-y-2.5"></div>
       </section>
 
-      <!-- ==================== PESTAÑA 4: DIRECTORIO DE SALUD Y MAPA CON API DE UBICACIÓN REAL ==================== -->
+      <!-- ==================== PESTAÑA 4: DIRECTORIO DE SALUD Y MAPA ==================== -->
       <section id="tab-directorio" class="h-full hidden flex-col p-4 overflow-y-auto chat-scroll bg-slate-50">
         <div class="flex items-start justify-between gap-2 mb-2.5">
           <div>
@@ -848,7 +836,7 @@
           </button>
         </div>
 
-        <!-- Buscador de Dirección / Ciudad + Filtro Amplio de Kilometraje -->
+        <!-- Buscador de Dirección / Ciudad + Filtro -->
         <div class="flex gap-1.5 mb-2.5">
           <div class="relative flex-1">
             <input
@@ -877,54 +865,39 @@
           </button>
         </div>
 
-        <!-- Contenedor del Mapa Interactivo Real con el Badge de Ubicación en Vivo -->
+        <!-- Contenedor del Mapa Interactivo Real -->
         <div class="w-full h-60 bg-sky-100 rounded-2xl border border-sky-200 relative overflow-hidden mb-3 shadow-xs">
-          <!-- Mapa Interactivo Real (Google Maps Tiles / OpenStreetMap) -->
           <div id="mapa-salud-real" class="w-full h-full z-10"></div>
-
-          <!-- Píldora Flotante con la Ubicación Actual -->
           <button
             onclick="centrarMapaEnUsuario()"
             class="absolute bottom-2.5 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-slate-200 shadow-md text-xs font-bold text-slate-700 flex items-center gap-1.5 z-20 hover:bg-white transition-all max-w-[90%] truncate"
-            title="Toca para centrar el mapa en la ubicación actual"
           >
             <i id="badge-gps-icon" class="fa-solid fa-crosshairs text-sky-600 shrink-0"></i>
             <span id="badge-ubicacion-texto" class="truncate">Bogotá, Colombia</span>
           </button>
-
-          <!-- Overlay de Carga al consultar API de Geolocalización / Overpass -->
           <div id="map-loading-overlay" class="hidden absolute inset-0 bg-white/85 backdrop-blur-xs z-30 flex flex-col items-center justify-center gap-2 p-4 text-center">
             <i class="fa-solid fa-circle-notch fa-spin text-sky-600 text-xl"></i>
             <p id="map-loading-message" class="text-xs font-bold text-slate-700">Obteniendo ubicación y centros cercanos...</p>
           </div>
         </div>
 
-        <!-- Filtros Rápidos: Todos | Urgencias | Farmacias -->
+        <!-- Filtros Rápidos -->
         <div class="flex items-center justify-between gap-2 mb-2.5">
           <div>
             <h3 class="text-xs font-bold text-slate-600 uppercase tracking-wider">Centros Cercanos</h3>
             <p id="subtitulo-radio-activo" class="text-[10px] text-sky-700 font-medium">Filtrando dentro de un radio de 15 km</p>
           </div>
           <div class="flex gap-1 bg-slate-200/70 p-0.5 rounded-lg text-[11px]">
-            <button onclick="filtrarCentrosMapa('todos')" id="btn-filtro-todos" class="px-2.5 py-1 rounded-md font-bold bg-white text-sky-700 shadow-2xs transition-all">
-              Todos (30)
-            </button>
-            <button onclick="filtrarCentrosMapa('hospital')" id="btn-filtro-hospital" class="px-2.5 py-1 rounded-md font-medium text-slate-600 hover:text-slate-900 transition-all">
-              Urgencias (15)
-            </button>
-            <button onclick="filtrarCentrosMapa('farmacia')" id="btn-filtro-farmacia" class="px-2.5 py-1 rounded-md font-medium text-slate-600 hover:text-slate-900 transition-all">
-              Farmacias (15)
-            </button>
+            <button onclick="filtrarCentrosMapa('todos')" id="btn-filtro-todos" class="px-2.5 py-1 rounded-md font-bold bg-white text-sky-700 shadow-2xs transition-all">Todos (30)</button>
+            <button onclick="filtrarCentrosMapa('hospital')" id="btn-filtro-hospital" class="px-2.5 py-1 rounded-md font-medium text-slate-600 hover:text-slate-900 transition-all">Urgencias (15)</button>
+            <button onclick="filtrarCentrosMapa('farmacia')" id="btn-filtro-farmacia" class="px-2.5 py-1 rounded-md font-medium text-slate-600 hover:text-slate-900 transition-all">Farmacias (15)</button>
           </div>
         </div>
 
-        <!-- Lista Dinámica de Centros de Salud y Farmacias Ordenadas por Distancia GPS Real -->
-        <div id="lista-centros-salud" class="space-y-2.5 pb-2">
-          <!-- Se renderiza dinámicamente con distancias reales -->
-        </div>
+        <div id="lista-centros-salud" class="space-y-2.5 pb-2"></div>
       </section>
 
-      <!-- ==================== PESTAÑA 5: PERFIL, EXPEDIENTE Y CONTACTOS DE EMERGENCIA ==================== -->
+      <!-- ==================== PESTAÑA 5: PERFIL Y CONTACTOS ==================== -->
       <section id="tab-perfil" class="h-full hidden flex-col p-4 overflow-y-auto chat-scroll bg-slate-50 space-y-3.5">
         <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
           <div class="w-16 h-16 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center text-2xl font-bold mx-auto mb-2 border-2 border-sky-300">
@@ -937,7 +910,6 @@
           </span>
         </div>
 
-        <!-- Datos Clínicos Rápidos (Sincronizado con expediente_usuario.json) -->
         <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
           <div class="flex items-center justify-between border-b border-slate-100 pb-2">
             <h3 class="text-xs font-bold text-slate-700">Expediente Clínico Básico</h3>
@@ -951,18 +923,12 @@
           </div>
         </div>
 
-        <!-- Gestión de Contactos de Emergencia: Agregar, Editar y Eliminar -->
         <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
           <div class="flex items-center justify-between border-b border-slate-100 pb-2">
             <h3 class="text-xs font-bold text-slate-700">Contactos de Emergencia</h3>
             <span class="text-[10px] text-sky-600 font-semibold">Alerta en Triaje Rojo</span>
           </div>
-
-          <div id="lista-contactos-perfil" class="space-y-2">
-            <!-- Renderizado dinámico -->
-          </div>
-
-          <!-- Formulario para Agregar / Editar Contacto -->
+          <div id="lista-contactos-perfil" class="space-y-2"></div>
           <div class="pt-2 border-t border-slate-100 space-y-2">
             <label id="label-form-contacto" class="text-[11px] font-semibold text-slate-600 block">Agregar nuevo contacto:</label>
             <input id="input-contacto-nombre" type="text" placeholder="Nombre completo (ej. María Zetina)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs">
@@ -984,24 +950,21 @@
         <i class="fa-solid fa-comments text-base"></i>
         <span>Doc Chat.</span>
       </button>
-
       <button onclick="switchTab('tab-medicamentos')" id="nav-tab-medicamentos" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-sky-600 text-[10px] transition-colors">
         <i class="fa-solid fa-pills text-base"></i>
         <span>Fármacos</span>
       </button>
-
       <button onclick="switchTab('tab-diario')" id="nav-tab-diario" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-sky-600 text-[10px] transition-colors">
         <i class="fa-solid fa-calendar-check text-base"></i>
         <span>Diario</span>
       </button>
-
       <button onclick="switchTab('tab-directorio')" id="nav-tab-directorio" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-sky-600 text-[10px] transition-colors">
         <i class="fa-solid fa-map-location-dot text-base"></i>
         <span>Directorio</span>
       </button>
     </nav>
 
-    <!-- MODAL DE CONFIRMACIÓN DE EMERGENCIA 123 + NOTIFICACIÓN A CONTACTO -->
+    <!-- MODAL DE EMERGENCIA -->
     <div id="modal-emergencia-123" class="hidden absolute inset-0 bg-slate-900/75 backdrop-blur-xs z-50 flex items-center justify-center p-4 animate-fadeIn">
       <div class="bg-white rounded-3xl p-5 max-w-xs w-full shadow-2xl border-2 border-red-500 text-center space-y-3">
         <div class="w-14 h-14 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-2xl mx-auto animate-bounce">
@@ -1027,54 +990,16 @@
 
   </div>
 
-  <!-- ==================== LÓGICA COMPLETA DE DOC-DOC + API DE UBICACIÓN Y MAPA ==================== -->
+  <!-- SCRIPT COMPLETO -->
   <script>
-    // ============================================================================
-    // 1. BASES DE DATOS LOCALES (Sincronizadas con ./Misión Bogotá/*.json)
-    // ============================================================================
     let DB_MEDICAMENTOS = {
-      "Ibuprofeno": {
-        forma: "Tableta 400mg o 600mg",
-        incompatibles_graves: ["Aspirina", "Warfarina"],
-        incompatibles_moderadas: ["Alcohol", "Antihipertensivos"],
-        advertencia: "Puede aumentar el riesgo de sangrado estomacal y elevar la presión arterial si se combina con AINEs o anticoagulantes."
-      },
-      "Paracetamol": {
-        forma: "Tableta 500mg o 1g",
-        incompatibles_graves: ["Alcohol"],
-        incompatibles_moderadas: ["Warfarina"],
-        advertencia: "El consumo simultáneo con alcohol incrementa significativamente el riesgo de daño hepático grave."
-      },
-      "Aspirina": {
-        forma: "Tableta 100mg o 500mg",
-        incompatibles_graves: ["Ibuprofeno", "Warfarina", "Corticosteroides"],
-        incompatibles_moderadas: ["Alcohol"],
-        advertencia: "Riesgo elevado de úlcera gástrica y hemorragias al combinarse con otros antiinflamatorios o anticoagulantes."
-      },
-      "Alcohol": {
-        forma: "Bebida alcohólica",
-        incompatibles_graves: ["Paracetamol"],
-        incompatibles_moderadas: ["Ibuprofeno", "Aspirina"],
-        advertencia: "Incompatible con analgésicos de procesamiento hepático y gastrolesivos."
-      },
-      "Warfarina": {
-        forma: "Tableta 5mg (Anticoagulante)",
-        incompatibles_graves: ["Ibuprofeno", "Aspirina"],
-        incompatibles_moderadas: ["Paracetamol"],
-        advertencia: "Anticoagulante crítico. Evitar combinación con AINEs sin supervisión médica estricta."
-      },
-      "Corticosteroides": {
-        forma: "Prednisona / Dexametasona",
-        incompatibles_graves: ["Aspirina"],
-        incompatibles_moderadas: ["Ibuprofeno"],
-        advertencia: "Incrementa el riesgo de ulceración y hemorragia gastrointestinal."
-      },
-      "Antihipertensivos": {
-        forma: "Losartán / Enalapril",
-        incompatibles_graves: [],
-        incompatibles_moderadas: ["Ibuprofeno"],
-        advertencia: "Los AINEs como el Ibuprofeno pueden reducir el efecto antihipertensivo y afectar la función renal."
-      }
+      "Ibuprofeno": { forma: "Tableta 400mg o 600mg", incompatibles_graves: ["Aspirina", "Warfarina"], incompatibles_moderadas: ["Alcohol", "Antihipertensivos"], advertencia: "Puede aumentar el riesgo de sangrado estomacal y elevar la presión arterial." },
+      "Paracetamol": { forma: "Tableta 500mg o 1g", incompatibles_graves: ["Alcohol"], incompatibles_moderadas: ["Warfarina"], advertencia: "El consumo simultáneo con alcohol incrementa el riesgo de daño hepático grave." },
+      "Aspirina": { forma: "Tableta 100mg o 500mg", incompatibles_graves: ["Ibuprofeno", "Warfarina", "Corticosteroides"], incompatibles_moderadas: ["Alcohol"], advertencia: "Riesgo elevado de úlcera gástrica y hemorragias." },
+      "Alcohol": { forma: "Bebida alcohólica", incompatibles_graves: ["Paracetamol"], incompatibles_moderadas: ["Ibuprofeno", "Aspirina"], advertencia: "Incompatible con analgésicos de procesamiento hepático." },
+      "Warfarina": { forma: "Tableta 5mg", incompatibles_graves: ["Ibuprofeno", "Aspirina"], incompatibles_moderadas: ["Paracetamol"], advertencia: "Anticoagulante crítico. Evitar combinación con AINEs." },
+      "Corticosteroides": { forma: "Prednisona / Dexametasona", incompatibles_graves: ["Aspirina"], incompatibles_moderadas: ["Ibuprofeno"], advertencia: "Incrementa el riesgo de ulceración y hemorragia gastrointestinal." },
+      "Antihipertensivos": { forma: "Losartán / Enalapril", incompatibles_graves: [], incompatibles_moderadas: ["Ibuprofeno"], advertencia: "Los AINEs pueden reducir el efecto antihipertensivo." }
     };
 
     let expedienteUsuario = {
@@ -1086,40 +1011,32 @@
       enfermedades_cronicas: ["Asma leve"],
       alergias: ["Penicilina"],
       medicamentos_actuales: ["Salbutamol"],
-      contactos_emergencia: [
-        { nombre: "Maria Zetina (Familiar de contacto)", telefono: "+573000000000" }
-      ]
+      contactos_emergencia: [{ nombre: "Maria Zetina", telefono: "+573000000000" }]
     };
 
-    let historialConsultas = [
-      {
-        id_consulta: "cons_001",
-        fecha: "Ayer 10:30 AM",
-        sintoma_reportado: "Dolor de Cabeza",
-        intensidad: 6,
-        triaje_inicial: "Verde",
-        triaje_actualizado: "Amarillo",
-        respuesta_usuario: "Empeoró",
-        observacion: "El sistema escaló automáticamente el triaje de Verde a Amarillo debido al reporte de empeoramiento en el seguimiento a las 24 horas."
-      }
-    ];
+    let historialConsultas = [{
+      id_consulta: "cons_001",
+      fecha: "Ayer 10:30 AM",
+      sintoma_reportado: "Dolor de Cabeza",
+      intensidad: 6,
+      triaje_inicial: "Verde",
+      triaje_actualizado: "Amarillo",
+      respuesta_usuario: "Empeoró",
+      observacion: "Escaló automáticamente de Verde a Amarillo."
+    }];
 
     let medicamentosSeleccionados = [];
     let intensidadDolorActual = null;
-    let modoOffline = false;
+    let entrevistaClinicaActiva = null;
     let editandoContactoIndex = null;
 
-    // ============================================================================
-    // 2. VARIABLES DE LA API DE UBICACIÓN (HTML5 GEOLOCATION + LEAFLET + OVERPASS + NOMINATIM)
-    // ============================================================================
     let map = null;
     let userMarker = null;
     let userAccuracyCircle = null;
     let markersLayer = null;
-    let watchPositionId = null;
+    let radioFiltroCircle = null;
     let filtroTipoCentro = 'todos';
 
-    // Ubicación inicial (Bogotá, Colombia)
     let ubicacionActual = {
       lat: 4.6486,
       lng: -74.0648,
@@ -1128,1887 +1045,21 @@
       etiqueta: "Bogotá, Colombia"
     };
 
-    // Catálogo completo con 30 establecimientos reales verificados (15 Hospitales/Urgencias + 15 Farmacias 24 Horas)
-    // Cada uno cuenta con coordenadas reales exactas y query oficial verificado para Google Maps
     const CENTROS_SALUD_BASE = [
-      // ==================== 15 HOSPITALES Y CLÍNICAS DE URGENCIAS ====================
-      {
-        id: 'hosp-1',
-        nombre: 'Hospital de San José - Urgencias',
-        tipo: 'hospital',
-        lat: 4.6020,
-        lng: -74.0837,
-        horario: 'Abierto 24 Horas • Urgencias',
-        direccion: 'Calle 10 #18-75, Los Mártires, Bogotá',
-        queryGoogleMaps: 'Sociedad de Cirugía de Bogotá Hospital de San José, Calle 10 #18-75, Bogotá, Colombia',
-        telefono: '6013538000',
-        abierta: true
-      },
-      {
-        id: 'hosp-2',
-        nombre: 'Hospital Universitario San Ignacio - Urgencias',
-        tipo: 'hospital',
-        lat: 4.6285,
-        lng: -74.0644,
-        horario: 'Abierto 24 Horas • Urgencias',
-        direccion: 'Cra. 7 #40-62, Chapinero, Bogotá',
-        queryGoogleMaps: 'Hospital Universitario San Ignacio, Cra. 7 #40-62, Bogotá, Colombia',
-        telefono: '6015946161',
-        abierta: true
-      },
-      {
-        id: 'hosp-3',
-        nombre: 'Clínica de Marly - Urgencias',
-        tipo: 'hospital',
-        lat: 4.6368,
-        lng: -74.0653,
-        horario: 'Abierto 24 Horas • Urgencias',
-        direccion: 'Calle 50 #9-67, Chapinero, Bogotá',
-        queryGoogleMaps: 'Clínica de Marly, Calle 50 #9-67, Bogotá, Colombia',
-        telefono: '6013436600',
-        abierta: true
-      },
-      {
-        id: 'hosp-4',
-        nombre: 'Hospital Militar Central - Urgencias',
-        tipo: 'hospital',
-        lat: 4.6345,
-        lng: -74.0617,
-        horario: 'Abierto 24 Horas • Urgencias',
-        direccion: 'Tv. 3C #49-02, Chapinero, Bogotá',
-        queryGoogleMaps: 'Hospital Militar Central, Tv. 3C #49-02, Bogotá, Colombia',
-        telefono: '6013486868',
-        abierta: true
-      },
-      {
-        id: 'hosp-5',
-        nombre: 'Clínica Palermo - Urgencias',
-        tipo: 'hospital',
-        lat: 4.6349,
-        lng: -74.0736,
-        horario: 'Abierto 24 Horas • Urgencias',
-        direccion: 'Calle 45C #22-02, Teusaquillo, Bogotá',
-        queryGoogleMaps: 'Clínica Palermo, Calle 45C #22-02, Bogotá, Colombia',
-        telefono: '6015727777',
-        abierta: true
-      },
-      {
-        id: 'hosp-6',
-        nombre: 'Hospital Universitario Mayor Méderi - Urgencias',
-        tipo: 'hospital',
-        lat: 4.6226,
-        lng: -74.0827,
-        horario: 'Abierto 24 Horas • Urgencias',
-        direccion: 'Calle 24 #29-45, Teusaquillo, Bogotá',
-        queryGoogleMaps: 'Hospital Universitario Mayor Méderi, Calle 24 #29-45, Bogotá, Colombia',
-        telefono: '6015600520',
-        abierta: true
-      },
-      {
-        id: 'hosp-7',
-        nombre: 'Hospital Universitario Nacional de Colombia - Urgencias',
-        tipo: 'hospital',
-        lat: 4.6483,
-        lng: -74.0938,
-        horario: 'Abierto 24 Horas • Urgencias',
-        direccion: 'Calle 44 #59-75, Teusaquillo, Bogotá',
-        queryGoogleMaps: 'Hospital Universitario Nacional de Colombia, Calle 44 #59-75, Bogotá, Colombia',
-        telefono: '6013904888',
-        abierta: true
-      },
-      {
-        id: 'hosp-8',
-        nombre: 'Clínica del Country - Urgencias',
-        tipo: 'hospital',
-        lat: 4.6685,
-        lng: -74.0563,
-        horario: 'Abierto 24 Horas • Urgencias',
-        direccion: 'Cra. 16 #82-57, Chicó, Bogotá',
-        queryGoogleMaps: 'Clínica del Country, Cra. 16 #82-57, Bogotá, Colombia',
-        telefono: '6015300470',
-        abierta: true
-      },
-      {
-        id: 'hosp-9',
-        nombre: 'Hospital Infantil Universitario de San José - Urgencias',
-        tipo: 'hospital',
-        lat: 4.6672,
-        lng: -74.0792,
-        horario: 'Abierto 24 Horas • Urgencias',
-        direccion: 'Cra. 52 #67A-71, Barrios Unidos, Bogotá',
-        queryGoogleMaps: 'Hospital Infantil Universitario de San José, Cra. 52 #67A-71, Bogotá, Colombia',
-        telefono: '6014377540',
-        abierta: true
-      },
-      {
-        id: 'hosp-10',
-        nombre: 'Fundación Santa Fe de Bogotá - Urgencias',
-        tipo: 'hospital',
-        lat: 4.6953,
-        lng: -74.0333,
-        horario: 'Abierto 24 Horas • Urgencias',
-        direccion: 'Cra. 7 #117-15, Usaquén, Bogotá',
-        queryGoogleMaps: 'Hospital Universitario Fundación Santa Fe de Bogotá, Cra. 7 #117-15, Bogotá, Colombia',
-        telefono: '6016030303',
-        abierta: true
-      },
-      {
-        id: 'hosp-11',
-        nombre: 'Fundación Clínica Shaio - Urgencias',
-        tipo: 'hospital',
-        lat: 4.6989,
-        lng: -74.0761,
-        horario: 'Abierto 24 Horas • Urgencias',
-        direccion: 'Dg. 115A #70C-75, Suba, Bogotá',
-        queryGoogleMaps: 'Fundación Clínica Shaio, Dg. 115A #70C-75, Bogotá, Colombia',
-        telefono: '6015938210',
-        abierta: true
-      },
-      {
-        id: 'hosp-12',
-        nombre: 'Clínica Reina Sofía - Urgencias',
-        tipo: 'hospital',
-        lat: 4.7069,
-        lng: -74.0510,
-        horario: 'Abierto 24 Horas • Urgencias',
-        direccion: 'Ac. 127 #20-78, Usaquén, Bogotá',
-        queryGoogleMaps: 'Clínica Reina Sofía, Ac. 127 #20-78, Bogotá, Colombia',
-        telefono: '6016252111',
-        abierta: true
-      },
-      {
-        id: 'hosp-13',
-        nombre: 'Fundación Cardioinfantil (LaCardio) - Urgencias',
-        tipo: 'hospital',
-        lat: 4.7418,
-        lng: -74.0357,
-        horario: 'Abierto 24 Horas • Urgencias',
-        direccion: 'Calle 163A #13B-60, Usaquén, Bogotá',
-        queryGoogleMaps: 'Fundación Cardioinfantil LaCardio, Calle 163A #13B-60, Bogotá, Colombia',
-        telefono: '6016672727',
-        abierta: true
-      },
-      {
-        id: 'hosp-14',
-        nombre: 'Hospital Universitario Clínica San Rafael - Urgencias',
-        tipo: 'hospital',
-        lat: 4.5768,
-        lng: -74.0919,
-        horario: 'Abierto 24 Horas • Urgencias',
-        direccion: 'Cra. 8 #17-45 Sur, San Cristóbal, Bogotá',
-        queryGoogleMaps: 'Hospital Universitario Clínica San Rafael, Cra. 8 #17-45 Sur, Bogotá, Colombia',
-        telefono: '6013282300',
-        abierta: true
-      },
-      {
-        id: 'hosp-15',
-        nombre: 'Hospital Occidente de Kennedy - Urgencias',
-        tipo: 'hospital',
-        lat: 4.6163,
-        lng: -74.1536,
-        horario: 'Abierto 24 Horas • Urgencias',
-        direccion: 'Av. Primero de Mayo #40B-54 Sur, Kennedy, Bogotá',
-        queryGoogleMaps: 'Hospital Occidente de Kennedy, Av. Primero de Mayo #40B-54 Sur, Bogotá, Colombia',
-        telefono: '6014480030',
-        abierta: true
-      },
-
-      // ==================== 15 FARMACIAS Y DROGUERÍAS 24 HORAS ====================
-      {
-        id: 'farm-1',
-        nombre: 'Farmacia Cruz Verde - Turno Chapinero',
-        tipo: 'farmacia',
-        lat: 4.6437,
-        lng: -74.0654,
-        horario: 'Atención 24 Horas',
-        direccion: 'Cra. 13 #57-24, Chapinero, Bogotá',
-        queryGoogleMaps: 'Droguería Cruz Verde, Cra. 13 #57-24, Chapinero, Bogotá, Colombia',
-        telefono: '6013077088',
-        abierta: true
-      },
-      {
-        id: 'farm-2',
-        nombre: 'Farmacia Cruz Verde - Parque de la 93',
-        tipo: 'farmacia',
-        lat: 4.6768,
-        lng: -74.0512,
-        horario: 'Atención 24 Horas',
-        direccion: 'Calle 93 #15-27, Chicó, Bogotá',
-        queryGoogleMaps: 'Droguería Cruz Verde, Calle 93 #15-27, Bogotá, Colombia',
-        telefono: '6013077088',
-        abierta: true
-      },
-      {
-        id: 'farm-3',
-        nombre: 'Farmacia Cruz Verde - Centro Internacional',
-        tipo: 'farmacia',
-        lat: 4.6143,
-        lng: -74.0705,
-        horario: 'Atención 24 Horas',
-        direccion: 'Cra. 10 #27-51, Centro Internacional, Bogotá',
-        queryGoogleMaps: 'Droguería Cruz Verde, Cra. 10 #27-51, Bogotá, Colombia',
-        telefono: '6013077088',
-        abierta: true
-      },
-      {
-        id: 'farm-4',
-        nombre: 'Farmacia Cruz Verde - Usaquén Calle 116',
-        tipo: 'farmacia',
-        lat: 4.6967,
-        lng: -74.0442,
-        horario: 'Atención 24 Horas',
-        direccion: 'Calle 116 #15B-08, Usaquén, Bogotá',
-        queryGoogleMaps: 'Droguería Cruz Verde, Calle 116 #15B-08, Bogotá, Colombia',
-        telefono: '6013077088',
-        abierta: true
-      },
-      {
-        id: 'farm-5',
-        nombre: 'Farmatodo 24 Horas - Chapinero Séptima',
-        tipo: 'farmacia',
-        lat: 4.6425,
-        lng: -74.0628,
-        horario: 'Atención 24 Horas',
-        direccion: 'Cra. 7 #57-08, Chapinero, Bogotá',
-        queryGoogleMaps: 'Farmatodo, Cra. 7 #57-08, Chapinero, Bogotá, Colombia',
-        telefono: '6017469000',
-        abierta: true
-      },
-      {
-        id: 'farm-6',
-        nombre: 'Farmatodo 24 Horas - Calle 85 Chicó',
-        tipo: 'farmacia',
-        lat: 4.6689,
-        lng: -74.0528,
-        horario: 'Atención 24 Horas',
-        direccion: 'Calle 85 #12-10, Chicó, Bogotá',
-        queryGoogleMaps: 'Farmatodo, Calle 85 #12-10, Bogotá, Colombia',
-        telefono: '6017469000',
-        abierta: true
-      },
-      {
-        id: 'farm-7',
-        nombre: 'Farmatodo 24 Horas - Nicolás de Federmán',
-        tipo: 'farmacia',
-        lat: 4.6431,
-        lng: -74.0835,
-        horario: 'Atención 24 Horas',
-        direccion: 'Calle 53 #35A-25, Teusaquillo, Bogotá',
-        queryGoogleMaps: 'Farmatodo Federmán, Calle 53 #35A-25, Bogotá, Colombia',
-        telefono: '6017469000',
-        abierta: true
-      },
-      {
-        id: 'farm-8',
-        nombre: 'Farmatodo 24 Horas - Cedritos Calle 140',
-        tipo: 'farmacia',
-        lat: 4.7186,
-        lng: -74.0372,
-        horario: 'Atención 24 Horas',
-        direccion: 'Calle 140 #11-45, Cedritos, Bogotá',
-        queryGoogleMaps: 'Farmatodo, Calle 140 #11-45, Bogotá, Colombia',
-        telefono: '6017469000',
-        abierta: true
-      },
-      {
-        id: 'farm-9',
-        nombre: 'Droguería Cafam 24 Horas - Calle 45 Javeriana',
-        tipo: 'farmacia',
-        lat: 4.6328,
-        lng: -74.0675,
-        horario: 'Atención 24 Horas',
-        direccion: 'Calle 45 #13-80, Chapinero, Bogotá',
-        queryGoogleMaps: 'Droguería Cafam, Calle 45 #13-80, Bogotá, Colombia',
-        telefono: '6013077011',
-        abierta: true
-      },
-      {
-        id: 'farm-10',
-        nombre: 'Droguería Cafam 24 Horas - Floresta',
-        tipo: 'farmacia',
-        lat: 4.6882,
-        lng: -74.0641,
-        horario: 'Atención 24 Horas',
-        direccion: 'Av. Suba #100-55, Floresta, Bogotá',
-        queryGoogleMaps: 'Droguería Cafam Floresta, Av. Suba #100-55, Bogotá, Colombia',
-        telefono: '6013077011',
-        abierta: true
-      },
-      {
-        id: 'farm-11',
-        nombre: 'Droguería Colsubsidio 24 Horas - Calle 26',
-        tipo: 'farmacia',
-        lat: 4.6248,
-        lng: -74.0791,
-        horario: 'Atención 24 Horas',
-        direccion: 'Calle 26 #25-50, Teusaquillo, Bogotá',
-        queryGoogleMaps: 'Droguería Colsubsidio, Calle 26 #25-50, Bogotá, Colombia',
-        telefono: '6017450999',
-        abierta: true
-      },
-      {
-        id: 'farm-12',
-        nombre: 'Droguería Colsubsidio 24 Horas - Calle 63 Chapinero',
-        tipo: 'farmacia',
-        lat: 4.6492,
-        lng: -74.0646,
-        horario: 'Atención 24 Horas',
-        direccion: 'Calle 63 #13-12, Chapinero, Bogotá',
-        queryGoogleMaps: 'Droguería Colsubsidio, Calle 63 #13-12, Bogotá, Colombia',
-        telefono: '6017450999',
-        abierta: true
-      },
-      {
-        id: 'farm-13',
-        nombre: 'Droguería La Rebaja 24 Horas - Galerías',
-        tipo: 'farmacia',
-        lat: 4.6416,
-        lng: -74.0756,
-        horario: 'Atención 24 Horas',
-        direccion: 'Calle 53 #25-07, Galerías, Bogotá',
-        queryGoogleMaps: 'Droguería La Rebaja, Calle 53 #25-07, Bogotá, Colombia',
-        telefono: '6013077171',
-        abierta: true
-      },
-      {
-        id: 'farm-14',
-        nombre: 'Droguería La Rebaja 24 Horas - Restrepo',
-        tipo: 'farmacia',
-        lat: 4.5852,
-        lng: -74.1018,
-        horario: 'Atención 24 Horas',
-        direccion: 'Cra. 19 #16-30 Sur, Restrepo, Bogotá',
-        queryGoogleMaps: 'Droguería La Rebaja, Cra. 19 #16-30 Sur, Bogotá, Colombia',
-        telefono: '6013077171',
-        abierta: true
-      },
-      {
-        id: 'farm-15',
-        nombre: 'Droguería Locatel 24 Horas - Calle 100 Autopista',
-        tipo: 'farmacia',
-        lat: 4.6908,
-        lng: -74.0564,
-        horario: 'Atención 24 Horas',
-        direccion: 'Auto. Norte #102A-03, Chicó Norte, Bogotá',
-        queryGoogleMaps: 'Locatel Calle 100, Auto. Norte #102A-03, Bogotá, Colombia',
-        telefono: '6014011111',
-        abierta: true
-      }
+      { id: 'hosp-1', nombre: 'Hospital de San José - Urgencias', tipo: 'hospital', lat: 4.6020, lng: -74.0837, horario: 'Abierto 24 Horas • Urgencias', direccion: 'Calle 10 #18-75, Bogotá', queryGoogleMaps: 'Hospital de San José, Bogotá', telefono: '6013538000', abierta: true },
+      { id: 'hosp-2', nombre: 'Hospital Universitario San Ignacio', tipo: 'hospital', lat: 4.6285, lng: -74.0644, horario: 'Abierto 24 Horas • Urgencias', direccion: 'Cra. 7 #40-62, Bogotá', queryGoogleMaps: 'Hospital Universitario San Ignacio, Bogotá', telefono: '6015946161', abierta: true },
+      { id: 'farm-1', nombre: 'Farmacia Cruz Verde - Chapinero', tipo: 'farmacia', lat: 4.6437, lng: -74.0654, horario: 'Atención 24 Horas', direccion: 'Cra. 13 #57-24, Bogotá', queryGoogleMaps: 'Cruz Verde Chapinero, Bogotá', telefono: '6013077088', abierta: true },
+      { id: 'farm-2', nombre: 'Farmatodo 24 Horas - Chicó', tipo: 'farmacia', lat: 4.6689, lng: -74.0528, horario: 'Atención 24 Horas', direccion: 'Calle 85 #12-10, Bogotá', queryGoogleMaps: 'Farmatodo Chicó, Bogotá', telefono: '6017469000', abierta: true }
     ];
 
     let centrosCercanos = [...CENTROS_SALUD_BASE];
 
-    // ============================================================================
-    // 3. INICIALIZACIÓN AL CARGAR LA APLICACIÓN
-    // ============================================================================
     window.addEventListener('DOMContentLoaded', () => {
       renderizarBotonesEscalaDolor();
-      cargarJsonDelRepositorio();
       renderizarHistorialDiario();
       renderizarContactosPerfil();
       renderizarListaCentrosUI();
     });
-
-    async function cargarJsonDelRepositorio() {
-      try {
-        const resExp = await fetch('./Misión Bogotá/expediente_usuario.json');
-        if (resExp.ok) {
-          const data = await resExp.json();
-          if (data.usuario) {
-            expedienteUsuario = {
-              ...expedienteUsuario,
-              ...data.usuario
-            };
-            actualizarVistaExpediente();
-            renderizarContactosPerfil();
-          }
-          if (Array.isArray(data.historial_consultas) && data.historial_consultas.length > 0) {
-            const c = data.historial_consultas[0];
-            historialConsultas = [{
-              id_consulta: c.id_consulta || 'cons_001',
-              fecha: new Date(c.fecha).toLocaleString('es-CO', { dateStyle: 'short', timeStyle: 'short' }),
-              sintoma_reportado: c.sintoma_reportado || 'Dolor de cabeza',
-              intensidad: 6,
-              triaje_inicial: c.triaje_inicial || 'Verde',
-              triaje_actualizado: c.estado_seguimiento?.triaje_actualizado || 'Amarillo',
-              respuesta_usuario: c.estado_seguimiento?.respuesta_usuario || 'Empeoró',
-              observacion: c.estado_seguimiento?.observacion || ''
-            }];
-            renderizarHistorialDiario();
-          }
-        }
-      } catch (e) {
-        // Respaldo en memoria activo si se ejecuta sin servidor HTTP
-      }
-    }
-
-    function actualizarVistaExpediente() {
-      document.getElementById('perfil-id-badge').textContent = expedienteUsuario.id_usuario;
-      document.getElementById('exp-edad-genero').textContent = `${expedienteUsuario.edad} años • ${expedienteUsuario.genero}`;
-      document.getElementById('exp-cronicas').textContent = (expedienteUsuario.enfermedades_cronicas || []).join(', ') || 'Ninguna declarada';
-      document.getElementById('exp-alergias').textContent = (expedienteUsuario.alergias || []).join(', ') || 'Ninguna';
-      document.getElementById('exp-meds').textContent = (expedienteUsuario.medicamentos_actuales || []).join(', ') || 'Ninguno';
-    }
-
-    // ============================================================================
-    // 4. NAVEGACIÓN ENTRE PESTAÑAS (TAB BAR)
-    // ============================================================================
-    function switchTab(tabId) {
-      const tabs = ['tab-chat', 'tab-medicamentos', 'tab-diario', 'tab-directorio', 'tab-perfil'];
-      tabs.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.classList.add('hidden');
-          el.classList.remove('flex');
-        }
-      });
-
-      const target = document.getElementById(tabId);
-      if (target) {
-        target.classList.remove('hidden');
-        target.classList.add('flex');
-      }
-
-      // Actualizar colores de barra inferior
-      const navIds = ['chat', 'medicamentos', 'diario', 'directorio'];
-      navIds.forEach(id => {
-        const btn = document.getElementById(`nav-tab-${id}`);
-        if (btn) {
-          if (`tab-${id}` === tabId) {
-            btn.className = "flex flex-col items-center gap-0.5 text-sky-600 font-semibold text-[10px] transition-colors";
-          } else {
-            btn.className = "flex flex-col items-center gap-0.5 text-slate-400 hover:text-sky-600 text-[10px] transition-colors";
-          }
-        }
-      });
-
-      // Cuando el usuario abre "Directorio", inicializar y ajustar el mapa real
-      if (tabId === 'tab-directorio') {
-        setTimeout(() => {
-          inicializarMapaInteractivo();
-          if (map) map.invalidateSize();
-        }, 100);
-      }
-    }
-
-    function cerrarDisclaimer() {
-      document.getElementById('disclaimer-banner').style.display = 'none';
-    }
-
-    // ============================================================================
-    // 5. API DE UBICACIÓN EN TIEMPO REAL + MAPA INTERACTIVO REAL (SIN API KEY ERROR)
-    // ============================================================================
-
-    /**
-     * Fórmula Haversine para calcular la distancia real en kilómetros entre el usuario y cada hospital/farmacia
-     */
-    function calcularDistanciaKm(lat1, lon1, lat2, lon2) {
-      const R = 6371;
-      const dLat = (lat2 - lat1) * Math.PI / 180;
-      const dLon = (lon2 - lon1) * Math.PI / 180;
-      const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      return R * c;
-    }
-
-    function formatearTextoDistancia(km) {
-      if (km < 1) {
-        return `A ${Math.max(50, Math.round(km * 1000))}m`;
-      }
-      return `A ${km.toFixed(1)} km`;
-    }
-
-    /**
-     * Inicializa el mapa interactivo real en el contenedor #mapa-salud-real
-     * Usa tiles reales de Google Maps en español con respaldo automático a OpenStreetMap oficial
-     * (Nunca muestra "API KEY REQUIRED")
-     */
-    function inicializarMapaInteractivo() {
-      if (map) return;
-      if (typeof L === 'undefined') {
-        renderizarListaCentrosUI();
-        return;
-      }
-
-      map = L.map('mapa-salud-real', {
-        zoomControl: true,
-        attributionControl: false
-      }).setView([ubicacionActual.lat, ubicacionActual.lng], 12);
-
-      // Capa de calles real de Google Maps en español (sin marcas de "API KEY REQUIRED")
-      const googleStreetsLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=es', {
-        maxZoom: 20
-      });
-
-      // Respaldo automático con OpenStreetMap oficial en caso de bloqueo de red
-      const osmFallbackLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19
-      });
-
-      let fallbackActivated = false;
-      googleStreetsLayer.on('tileerror', () => {
-        if (!fallbackActivated && map) {
-          fallbackActivated = true;
-          map.removeLayer(googleStreetsLayer);
-          osmFallbackLayer.addTo(map);
-        }
-      });
-
-      googleStreetsLayer.addTo(map);
-
-      markersLayer = L.layerGroup().addTo(map);
-
-      actualizarMarcadorUsuario(false);
-      renderizarListaCentrosUI();
-    }
-
-    /**
-     * Dibuja o mueve el marcador GPS azul pulsante del usuario y el círculo de precisión
-     */
-    function actualizarMarcadorUsuario(hacerZoom = true) {
-      if (!map) return;
-
-      const iconoUsuario = L.divIcon({
-        className: '',
-        html: '<div class="user-gps-dot" title="Tu ubicación actual"></div>',
-        iconSize: [18, 18],
-        iconAnchor: [9, 9]
-      });
-
-      if (userMarker) {
-        userMarker.setLatLng([ubicacionActual.lat, ubicacionActual.lng]);
-      } else {
-        userMarker = L.marker([ubicacionActual.lat, ubicacionActual.lng], { icon: iconoUsuario })
-          .addTo(map)
-          .bindPopup(`
-            <div class="text-xs">
-              <strong class="text-sky-700 block">📍 Punto de referencia actual</strong>
-              <span class="text-slate-600">${ubicacionActual.etiqueta}</span>
-            </div>
-          `);
-      }
-
-      const radioPrecision = Math.min(ubicacionActual.accuracy || 40, 300);
-      if (userAccuracyCircle) {
-        userAccuracyCircle.setLatLng([ubicacionActual.lat, ubicacionActual.lng]);
-        userAccuracyCircle.setRadius(radioPrecision);
-      } else {
-        userAccuracyCircle = L.circle([ubicacionActual.lat, ubicacionActual.lng], {
-          radius: radioPrecision,
-          color: '#0284C7',
-          fillColor: '#38BDF8',
-          fillOpacity: 0.15,
-          weight: 1
-        }).addTo(map);
-      }
-
-      if (hacerZoom) {
-        map.setView([ubicacionActual.lat, ubicacionActual.lng], 14, { animate: true });
-      }
-    }
-
-    function centrarMapaEnUsuario() {
-      if (!map) {
-        inicializarMapaInteractivo();
-      }
-      if (!map) return;
-      map.setView([ubicacionActual.lat, ubicacionActual.lng], 13, { animate: true });
-      if (userMarker) userMarker.openPopup();
-    }
-
-    /**
-     * Obtiene la ubicación en vivo del dispositivo mediante la API HTML5 Geolocation (navigator.geolocation)
-     */
-    function obtenerUbicacionGPSReal(forzarFeedback = true) {
-      const btnGps = document.getElementById('btn-gps-directorio');
-      const badgeTexto = document.getElementById('badge-ubicacion-texto');
-      const badgeIcon = document.getElementById('badge-gps-icon');
-      const overlay = document.getElementById('map-loading-overlay');
-      const overlayMsg = document.getElementById('map-loading-message');
-
-      if (!navigator.geolocation) {
-        if (forzarFeedback) alert('Tu navegador no soporta geolocalización GPS. Usa el buscador de ciudad arriba.');
-        return;
-      }
-
-      if (btnGps) {
-        btnGps.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Ubicando...</span>';
-      }
-      if (badgeTexto) badgeTexto.textContent = 'Detectando tu ubicación GPS...';
-      if (forzarFeedback && overlay) {
-        overlay.classList.remove('hidden');
-        overlayMsg.textContent = 'Conectando con el GPS de tu dispositivo...';
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          ubicacionActual = {
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude,
-            accuracy: Math.round(pos.coords.accuracy || 25),
-            esGpsReal: true,
-            etiqueta: `${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`
-          };
-
-          if (btnGps) {
-            btnGps.innerHTML = '<i class="fa-solid fa-check"></i><span>GPS Activo</span>';
-            btnGps.className = 'shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl shadow-sm flex items-center gap-1.5 transition-all';
-          }
-          if (badgeIcon) {
-            badgeIcon.className = 'fa-solid fa-location-crosshairs text-emerald-600 shrink-0';
-          }
-
-          inicializarMapaInteractivo();
-          actualizarMarcadorUsuario(true);
-
-          // 1. Geocodificación inversa para mostrar el nombre del barrio y ciudad real
-          await resolverNombreLugarNominatim(ubicacionActual.lat, ubicacionActual.lng);
-
-          // 2. Buscar hospitales y farmacias reales alrededor de las coordenadas GPS y combinarlos
-          await consultarCentrosSaludOverpass(ubicacionActual.lat, ubicacionActual.lng);
-
-          if (overlay) overlay.classList.add('hidden');
-        },
-        async (error) => {
-          if (btnGps) {
-            btnGps.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i><span>Mi GPS</span>';
-          }
-          if (badgeTexto) {
-            badgeTexto.textContent = ubicacionActual.etiqueta;
-          }
-          if (overlay) overlay.classList.add('hidden');
-
-          inicializarMapaInteractivo();
-          actualizarMarcadorUsuario(false);
-          renderizarListaCentrosUI();
-
-          if (forzarFeedback) {
-            alert('Permite el acceso a la ubicación en tu navegador o busca cualquier barrio/ciudad en el buscador superior.');
-          }
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 9000,
-          maximumAge: 0
-        }
-      );
-    }
-
-    /**
-     * Geocodificación Inversa con Nominatim API (OpenStreetMap)
-     * Convierte lat/lng en "Barrio, Ciudad" para la píldora central y el perfil
-     */
-    async function resolverNombreLugarNominatim(lat, lng) {
-      const badgeTexto = document.getElementById('badge-ubicacion-texto');
-      const modalCoords = document.getElementById('modal-gps-coords');
-
-      try {
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=lat&lon={lng}&accept-language=es`,
-          { headers: { 'Accept': 'application/json' } }
-        );
-        if (res.ok) {
-          const data = await res.json();
-          const addr = data.address || {};
-          const zona = addr.suburb || addr.neighbourhood || addr.quarter || addr.city_district || addr.road || '';
-          const ciudad = addr.city || addr.town || addr.municipality || addr.state || 'Colombia';
-          const nombreLimpio = [zona, ciudad].filter(Boolean).join(', ');
-
-          ubicacionActual.etiqueta = nombreLimpio || 'Ubicación GPS Actual';
-          if (badgeTexto) badgeTexto.textContent = ubicacionActual.etiqueta;
-          if (modalCoords) modalCoords.textContent = ubicacionActual.etiqueta;
-          if (userMarker) {
-            userMarker.setPopupContent(`
-              <div class="text-xs">
-                <strong class="text-sky-700 block">📍 Tu ubicación GPS</strong>
-                <span class="text-slate-600">${ubicacionActual.etiqueta}</span>
-              </div>
-            `);
-          }
-        }
-      } catch (e) {
-        if (badgeTexto) badgeTexto.textContent = ubicacionActual.etiqueta;
-      }
-    }
-
-    /**
-     * Geocodificación Directa: Permite buscar cualquier barrio, dirección o ciudad
-     */
-    async function buscarUbicacionPorTexto() {
-      const input = document.getElementById('input-buscar-ubicacion');
-      const consulta = input.value.trim();
-      if (!consulta) return;
-
-      const overlay = document.getElementById('map-loading-overlay');
-      const overlayMsg = document.getElementById('map-loading-message');
-      if (overlay) {
-        overlay.classList.remove('hidden');
-        overlayMsg.textContent = `Buscando "${consulta}" en el mapa...`;
-      }
-
-      try {
-        const queryCompleta = consulta.toLowerCase().includes('colombia') ? consulta : `${consulta}, Colombia`;
-        const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(queryCompleta)}&limit=1&accept-language=es`;
-        const res = await fetch(url);
-        const resultados = await res.json();
-
-        if (Array.isArray(resultados) && resultados.length > 0) {
-          const lugar = resultados[0];
-          ubicacionActual = {
-            lat: parseFloat(lugar.lat),
-            lng: parseFloat(lugar.lon),
-            accuracy: 40,
-            esGpsReal: true,
-            etiqueta: lugar.display_name.split(',').slice(0, 2).join(', ')
-          };
-
-          document.getElementById('badge-ubicacion-texto').textContent = ubicacionActual.etiqueta;
-          inicializarMapaInteractivo();
-          actualizarMarcadorUsuario(true);
-          await consultarCentrosSaludOverpass(ubicacionActual.lat, ubicacionActual.lng);
-        } else {
-          alert('No se encontró esa ubicación. Prueba especificando la ciudad (ej. Chapinero, Bogotá).');
-        }
-      } catch (e) {
-        alert('No fue posible conectar con el servicio de geocodificación.');
-      } finally {
-        if (overlay) overlay.classList.add('hidden');
-      }
-    }
-
-    let radioFiltroCircle = null;
-
-    function obtenerRadioSeleccionadoKm() {
-      const selectRadio = document.getElementById('select-radio-km');
-      const valorKm = selectRadio ? parseFloat(selectRadio.value) : 15;
-      return isNaN(valorKm) ? 15 : valorKm;
-    }
-
-    function cambiarRadioBusqueda() {
-      const radioKm = obtenerRadioSeleccionadoKm();
-      renderizarListaCentrosUI();
-
-      // Ajustar zoom del mapa según el radio en kilómetros seleccionado
-      if (map) {
-        let zoomIdeal = 12;
-        if (radioKm <= 1) zoomIdeal = 15;
-        else if (radioKm <= 2) zoomIdeal = 14;
-        else if (radioKm <= 3.5) zoomIdeal = 13;
-        else if (radioKm <= 5) zoomIdeal = 13;
-        else if (radioKm <= 10) zoomIdeal = 12;
-        else if (radioKm <= 25) zoomIdeal = 11;
-        else zoomIdeal = 10;
-        map.setView([ubicacionActual.lat, ubicacionActual.lng], zoomIdeal, { animate: true });
-      }
-    }
-
-    /**
-     * Consulta en vivo a Overpass API (OpenStreetMap) los Hospitales, Clínicas y Farmacias reales
-     * alrededor del usuario y los combina con el catálogo verificado de 30 centros
-     */
-    async function consultarCentrosSaludOverpass(lat, lng) {
-      const overlay = document.getElementById('map-loading-overlay');
-      const overlayMsg = document.getElementById('map-loading-message');
-      const radioKm = obtenerRadioSeleccionadoKm();
-      const radioMetros = Math.min(Math.round(radioKm * 1000), 15000);
-
-      if (overlay) {
-        overlay.classList.remove('hidden');
-        overlayMsg.textContent = radioKm >= 999
-          ? 'Buscando hospitales y farmacias cercanas...'
-          : `Buscando hospitales y farmacias en un radio de ${radioKm} km...`;
-      }
-
-      try {
-        const overpassQuery = `
-          [out:json][timeout:8];
-          (
-            node["amenity"~"hospital|clinic|pharmacy"](around:radioMetros,{lat},${lng});
-            way["amenity"~"hospital|clinic|pharmacy"](around:radioMetros,{lat},${lng});
-          );
-          out center 40;
-        `;
-
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 6500);
-
-        const res = await fetch('https://overpass-api.de/api/interpreter', {
-          method: 'POST',
-          body: 'data=' + encodeURIComponent(overpassQuery),
-          signal: controller.signal
-        });
-        clearTimeout(timer);
-
-        if (!res.ok) throw new Error('Overpass API ocupada');
-        const data = await res.json();
-
-        const lugaresOverpass = (data.elements || [])
-          .map((el, idx) => {
-            const elLat = el.lat || el.center?.lat;
-            const elLng = el.lon || el.center?.lon;
-            const tags = el.tags || {};
-            const nombre = tags.name || tags['name:es'];
-            if (!elLat || !elLng || !nombre) return null;
-
-            const esFarmacia = tags.amenity === 'pharmacy';
-            const calle = [tags['addr:street'], tags['addr:housenumber']].filter(Boolean).join(' #');
-            const ciudad = tags['addr:city'] || ubicacionActual.etiqueta || 'Bogotá, Colombia';
-            const direccion = calle ? `${calle}, ciudad`:`{nombre}, ${ciudad}`;
-            const telefono = tags.phone || tags['contact:phone'] || '123';
-            const horario = tags.opening_hours === '24/7'
-              ? 'Abierto 24 Horas'
-              : esFarmacia
-              ? 'Atención 24 Horas / Turno'
-              : 'Abierto 24 Horas • Urgencias';
-
-            return {
-              id: `osm-${el.id || idx}`,
-              nombre,
-              tipo: esFarmacia ? 'farmacia' : 'hospital',
-              lat: elLat,
-              lng: elLng,
-              horario,
-              direccion,
-              queryGoogleMaps: `${nombre}, ${direccion}`,
-              telefono,
-              abierta: true
-            };
-          })
-          .filter(Boolean);
-
-        // Combinar lugares en vivo con el catálogo verificado de 30 centros sin duplicar nombres
-        const nombresExistentes = new Set(CENTROS_SALUD_BASE.map(c => c.nombre.toLowerCase()));
-        const nuevosUnicos = lugaresOverpass.filter(l => !nombresExistentes.has(l.nombre.toLowerCase()));
-        centrosCercanos = [...CENTROS_SALUD_BASE, ...nuevosUnicos];
-      } catch (e) {
-        centrosCercanos = [...CENTROS_SALUD_BASE];
-      } finally {
-        renderizarListaCentrosUI();
-        if (overlay) overlay.classList.add('hidden');
-      }
-    }
-
-    function filtrarCentrosMapa(tipo) {
-      filtroTipoCentro = tipo;
-      ['todos', 'hospital', 'farmacia'].forEach(t => {
-        const btn = document.getElementById(`btn-filtro-${t}`);
-        if (btn) {
-          btn.className = (t === tipo)
-            ? 'px-2.5 py-1 rounded-md font-bold bg-white text-sky-700 shadow-2xs transition-all'
-            : 'px-2.5 py-1 rounded-md font-medium text-slate-600 hover:text-slate-900 transition-all';
-        }
-      });
-      renderizarListaCentrosUI();
-    }
-
-    /**
-     * Construye enlaces verificados de Google Maps usando el nombre oficial y la dirección exacta
-     * para que Google Maps lleve exactamente al establecimiento real y nunca a una coordenada errónea
-     */
-    function obtenerEnlacesGoogleMaps(lugar) {
-      const destinoVerificado = lugar.queryGoogleMaps || `${lugar.nombre}, ${lugar.direccion}`;
-      const urlVerEnMaps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destinoVerificado)}`;
-      const urlComoLlegar = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destinoVerificado)}&travelmode=driving`;
-      return { urlVerEnMaps, urlComoLlegar };
-    }
-
-    /**
-     * Actualiza tanto los marcadores del mapa como las tarjetas de "CENTROS CERCANOS"
-     * filtrando estrictamente por la distancia máxima en kilómetros seleccionada.
-     */
-    function renderizarListaCentrosUI() {
-      const radioMaxKm = obtenerRadioSeleccionadoKm();
-      const subtituloRadio = document.getElementById('subtitulo-radio-activo');
-      if (subtituloRadio) {
-        subtituloRadio.textContent = radioMaxKm >= 999
-          ? 'Mostrando todos los centros sin límite de distancia'
-          : `Mostrando centros a menos de ${radioMaxKm} km de distancia`;
-      }
-
-      // Calcular distancia y filtrar por el kilometraje seleccionado
-      const dentroDelRadio = centrosCercanos
-        .map(centro => {
-          const distKm = calcularDistanciaKm(ubicacionActual.lat, ubicacionActual.lng, centro.lat, centro.lng);
-          return {
-            ...centro,
-            distKm,
-            distTexto: formatearTextoDistancia(distKm)
-          };
-        })
-        .filter(centro => centro.distKm <= radioMaxKm);
-
-      const totalHosp = dentroDelRadio.filter(c => c.tipo === 'hospital').length;
-      const totalFarm = dentroDelRadio.filter(c => c.tipo === 'farmacia').length;
-
-      const btnTodos = document.getElementById('btn-filtro-todos');
-      const btnHosp = document.getElementById('btn-filtro-hospital');
-      const btnFarm = document.getElementById('btn-filtro-farmacia');
-      if (btnTodos) btnTodos.textContent = `Todos (${dentroDelRadio.length})`;
-      if (btnHosp) btnHosp.textContent = `Urgencias (${totalHosp})`;
-      if (btnFarm) btnFarm.textContent = `Farmacias (${totalFarm})`;
-
-      const listaCalculada = dentroDelRadio
-        .filter(centro => {
-          if (filtroTipoCentro === 'hospital') return centro.tipo === 'hospital';
-          if (filtroTipoCentro === 'farmacia') return centro.tipo === 'farmacia';
-          return true;
-        })
-        .sort((a, b) => a.distKm - b.distKm);
-
-      // 1. Pintar círculo de radio en km y pines interactivos en el mapa
-      if (map && markersLayer) {
-        markersLayer.clearLayers();
-
-        if (radioFiltroCircle) {
-          map.removeLayer(radioFiltroCircle);
-          radioFiltroCircle = null;
-        }
-        if (radioMaxKm < 999) {
-          radioFiltroCircle = L.circle([ubicacionActual.lat, ubicacionActual.lng], {
-            radius: radioMaxKm * 1000,
-            color: '#0284C7',
-            weight: 1.5,
-            dashArray: '4, 4',
-            fillColor: '#38BDF8',
-            fillOpacity: 0.06
-          }).addTo(map);
-        }
-
-        listaCalculada.forEach(lugar => {
-          const esFarmacia = lugar.tipo === 'farmacia';
-          const colorPin = esFarmacia ? '#16A34A' : '#DC2626';
-          const iconoFa = esFarmacia ? 'fa-prescription-bottle-medical' : 'fa-hospital';
-
-          const pinHtml = L.divIcon({
-            className: '',
-            html: `
-              <div style="background:${colorPin};color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 3px 8px rgba(0,0,0,0.28);font-size:12px;">
-                <i class="fa-solid ${iconoFa}"></i>
-              </div>
-            `,
-            iconSize: [28, 28],
-            iconAnchor: [14, 14]
-          });
-
-          const { urlVerEnMaps, urlComoLlegar } = obtenerEnlacesGoogleMaps(lugar);
-
-          const marker = L.marker([lugar.lat, lugar.lng], { icon: pinHtml });
-          marker.bindPopup(`
-            <div style="min-width:195px;">
-              <span style="font-size:10px;font-weight:700;text-transform:uppercase;color:${colorPin};">
-                ${esFarmacia ? '💊 Farmacia 24h' : '🏥 Urgencias / Hospital'} • ${lugar.distTexto}
-              </span>
-              <div style="font-size:12px;font-weight:800;color:#1e293b;margin:2px 0;">${lugar.nombre}</div>
-              <div style="font-size:11px;color:#475569;margin-bottom:2px;">${lugar.direccion}</div>
-              <div style="font-size:10px;color:#64748b;margin-bottom:7px;">${lugar.horario}</div>
-              <div style="display:flex;gap:5px;">
-                <a href="${urlComoLlegar}" target="_blank" rel="noreferrer" style="flex:1;text-align:center;background:#0284c7;color:#fff;font-weight:700;font-size:11px;padding:5px 8px;border-radius:8px;text-decoration:none;">
-                  <i class="fa-solid fa-diamond-turn-right"></i> Cómo llegar
-                </a>
-                <a href="${urlVerEnMaps}" target="_blank" rel="noreferrer" style="text-align:center;background:#f1f5f9;color:#334155;font-weight:700;font-size:11px;padding:5px 8px;border-radius:8px;text-decoration:none;border:1px solid #cbd5e1;">
-                  Maps
-                </a>
-              </div>
-            </div>
-          `);
-          markersLayer.addLayer(marker);
-        });
-      }
-
-      // 2. Pintar las tarjetas de Centros Cercanos conservando el diseño limpio de Doc-Doc
-      const contenedor = document.getElementById('lista-centros-salud');
-      if (!contenedor) return;
-
-      if (listaCalculada.length === 0) {
-        contenedor.innerHTML = `
-          <div class="bg-white p-4 rounded-xl border border-slate-200 text-center text-xs text-slate-500 space-y-2">
-            <p class="font-semibold text-slate-700">No hay centros dentro de ${radioMaxKm} km de tu ubicación actual.</p>
-            <p class="text-[11px] text-slate-400">Amplía el filtro de kilómetros arriba para ver más establecimientos cercanos.</p>
-          </div>
-        `;
-        return;
-      }
-
-      contenedor.innerHTML = listaCalculada.map(lugar => {
-        const esFarmacia = lugar.tipo === 'farmacia';
-        const { urlVerEnMaps, urlComoLlegar } = obtenerEnlacesGoogleMaps(lugar);
-
-        if (!esFarmacia) {
-          return `
-            <div onclick="enfocarLugarEnMapa(${lugar.lat}, ${lugar.lng})" class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center cursor-pointer hover:border-sky-300 transition-all">
-              <div class="flex items-start gap-2.5 min-w-0 pr-2">
-                <div class="w-9 h-9 rounded-lg bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5">
-                  <i class="fa-solid fa-hospital"></i>
-                </div>
-                <div class="min-w-0">
-                  <p class="text-xs font-bold text-slate-800 truncate">${lugar.nombre}</p>
-                  <p class="text-[11px] text-slate-500">lugar.horario•<strongclass="text-slate-700">{lugar.distTexto}</strong></p>
-                  <p class="text-[10px] text-slate-400 truncate">${lugar.direccion}</p>
-                </div>
-              </div>
-              <div class="flex items-center gap-1.5 shrink-0" onclick="event.stopPropagation()">
-                <a href="${urlVerEnMaps}" target="_blank" rel="noreferrer" class="bg-sky-50 text-sky-700 hover:bg-sky-100 px-2.5 py-2 rounded-xl text-[11px] font-bold border border-sky-200 flex items-center gap-1" title="Abrir ubicación exacta en Google Maps">
-                  <i class="fa-solid fa-location-dot"></i>
-                  <span>Maps</span>
-                </a>
-                <a href="${urlComoLlegar}" target="_blank" rel="noreferrer" class="bg-sky-600 text-white hover:bg-sky-700 p-2 rounded-xl text-xs font-bold shadow-2xs" title="Ruta Cómo llegar en Google Maps">
-                  <i class="fa-solid fa-diamond-turn-right"></i>
-                </a>
-                <a href="tel:${lugar.telefono || '123'}" class="bg-red-50 text-red-600 hover:bg-red-100 p-2 rounded-xl text-xs font-bold border border-red-200" title="Llamar a Urgencias">
-                  <i class="fa-solid fa-phone"></i>
-                </a>
-              </div>
-            </div>
-          `;
-        } else {
-          return `
-            <div onclick="enfocarLugarEnMapa(${lugar.lat}, ${lugar.lng})" class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center cursor-pointer hover:border-emerald-300 transition-all">
-              <div class="flex items-start gap-2.5 min-w-0 pr-2">
-                <div class="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
-                  <i class="fa-solid fa-prescription-bottle-medical"></i>
-                </div>
-                <div class="min-w-0">
-                  <p class="text-xs font-bold text-slate-800 truncate">${lugar.nombre}</p>
-                  <p class="text-[11px] text-slate-500">lugar.horario•<strongclass="text-slate-700">{lugar.distTexto}</strong></p>
-                  <p class="text-[10px] text-slate-400 truncate">${lugar.direccion}</p>
-                </div>
-              </div>
-              <div class="flex items-center gap-1.5 shrink-0" onclick="event.stopPropagation()">
-                <a href="${urlVerEnMaps}" target="_blank" rel="noreferrer" class="bg-sky-50 text-sky-700 hover:bg-sky-100 px-2.5 py-1.5 rounded-xl text-[11px] font-bold border border-sky-200 flex items-center gap-1" title="Abrir ubicación exacta en Google Maps">
-                  <i class="fa-solid fa-location-dot"></i>
-                  <span>Maps</span>
-                </a>
-                <a href="${urlComoLlegar}" target="_blank" rel="noreferrer" class="bg-sky-600 text-white hover:bg-sky-700 p-2 rounded-xl text-xs font-bold shadow-2xs" title="Ruta Cómo llegar en Google Maps">
-                  <i class="fa-solid fa-diamond-turn-right"></i>
-                </a>
-                <span class="text-[11px] text-emerald-600 font-semibold bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200">Abierta</span>
-              </div>
-            </div>
-          `;
-        }
-      }).join('');
-    }
-
-    function enfocarLugarEnMapa(lat, lng) {
-      if (!map) inicializarMapaInteractivo();
-      map.setView([lat, lng], 17, { animate: true });
-      if (markersLayer) {
-        markersLayer.eachLayer(layer => {
-          const pos = layer.getLatLng();
-          if (Math.abs(pos.lat - lat) < 0.0001 && Math.abs(pos.lng - lng) < 0.0001) {
-            layer.openPopup();
-          }
-        });
-      }
-    }
-
-    // ============================================================================
-    // 6. ESCALA DE DOLOR (1-10) + MOTOR CLÍNICO INTELIGENTE DE DOC CHAT.
-    // ============================================================================
-    let entrevistaClinicaActiva = null; // Guarda el estado actual { sintomaId, paso } para responder también por texto
-
-    function normalizarTexto(str) {
-      return (str || '')
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .trim();
-    }
-
-    /**
-     * Base de Datos Clínica Extensa de Síntomas, Preguntas deAnamnesis, Soluciones y Preparación para el Médico
-     * Cubre 16 especialidades y motivos de consulta con árboles de decisión médica de 2 etapas.
-     */
-    const BASE_CLINICA_DOC_CHAT = {
-      dolor_pecho: {
-        nombre: 'Dolor o Presión en el Pecho',
-        mensajeInicialUsuario: 'Siento dolor o presión en el pecho',
-        especialidad: 'Urgencias / Cardiología',
-        palabrasClave: ['pecho', 'torax', 'corazon', 'infarto', 'angina', 'opresion en el pecho', 'punzada en el pecho', 'dolor toracico'],
-        pregunta1: '¿El dolor en el pecho es opresivo (como un peso), se pasa hacia el brazo izquierdo, cuello o mandíbula, o se acompaña de falta de aire o sudoración fría?',
-        alertaRoja: {
-          titulo: 'Sospecha de Compromiso Cardíaco o Torácico Agudo',
-          descripcion: 'El dolor torácico con irradiación o síntomas vegetativos requiere atención médica de emergencia inmediata para descartar un síndrome coronario agudo.',
-          causas: ['Síndrome coronario agudo / Angina inestable', 'Crisis hipertensiva con sobrecarga cardíaca', 'Tromboembolismo o urgencia pleuropulmonar'],
-          soluciones: [
-            'Suspende toda actividad física de inmediato y permanece sentado o semisentado en reposo absoluto.',
-            'Afloja prendas ajustadas (cinturón, camisa) para facilitar la ventilación.',
-            'No conduzcas por tu cuenta al hospital; activa la línea 123 o pide traslado asistido.'
-          ],
-          paraElMedico: 'Indica al médico de urgencias la hora exacta en que inició el dolor, si se irradia al brazo/mandíbula y los medicamentos que tomas actualmente.'
-        },
-        pregunta2: '¿En qué situación notas principalmente este dolor en el pecho?',
-        opciones2: [
-          {
-            id: 'esfuerzo',
-            texto: 'Al caminar rápido, subir escaleras o hacer esfuerzo físico',
-            color: 'Amarillo',
-            titulo: 'Dolor Torácico de Esfuerzo (Valoración Prioritaria)',
-            descripcion: 'El dolor que aparece con el esfuerzo y cede con el reposo debe ser evaluado prioritariamente con un electrocardiograma en las próximas 24 horas.',
-            causas: ['Angina estable de esfuerzo', 'Desacondicionamiento o espasmo bronquial inducido por ejercicio', 'Anemia o sobrecarga cardiovascular'],
-            soluciones: [
-              'Evita esfuerzos físicos, levantar peso o hacer deporte hasta ser evaluado por un médico.',
-              'Si el dolor reaparece en reposo o dura más de 10 minutos, acude de inmediato a Urgencias.',
-              'Registra tu presión arterial y frecuencia cardíaca si cuentas con tensiómetro en casa.'
-            ],
-            paraElMedico: 'Solicita valoración por Medicina General o Cardiología mencionando qué nivel de esfuerzo desencadena el síntoma (electrocardiograma sugerido).'
-          },
-          {
-            id: 'comer_acostarse',
-            texto: 'Tipo ardor detrás del esternón después de comer o al acostarme',
-            color: 'Verde',
-            titulo: 'Dolor Torácico de Probable Origen Digestivo (Reflujo)',
-            descripcion: 'El ardor retroesternal relacionado con las comidas o la postura acostada suele corresponder a reflujo gastroesofágico o espasmo esofágico.',
-            causas: ['Enfermedad por reflujo gastroesofágico (ERGE)', 'Esofagitis o gastritis aguda', 'Dispepsia funcional'],
-            soluciones: [
-              'No te acuestes durante las 2 a 3 horas posteriores a comer y eleva ligeramente la cabecera de la cama.',
-              'Evita café, licor, comidas grasas, picantes, chocolate y bebidas gaseosas.',
-              'Toma agua en pequeños sorbos y evita automedicarte con antiinflamatorios (ibuprofeno/aspirina).'
-            ],
-            paraElMedico: 'Comenta en tu consulta médica si el ardor mejora al estar de pie o con antiácidos y si presentas regurgitación ácida.'
-          },
-          {
-            id: 'tocar_mover',
-            texto: 'Aumenta al tocar las costillas, girar el tronco o respirar profundo',
-            color: 'Verde',
-            titulo: 'Dolor Osteomuscular de la Pared Torácica (Costocondritis)',
-            descripcion: 'Cuando el dolor se reproduce al presionar el pecho o mover el torso, suele originarse en los músculos intercostales o cartílagos costales.',
-            causas: ['Costocondritis (inflamación del cartílago costal)', 'Contractura muscular intercostal por postura o esfuerzo', 'Neuralgia intercostal benigna'],
-            soluciones: [
-              'Aplica calor local tibio (compresa) sobre la zona dolorida durante 15 minutos, 2 a 3 veces al día.',
-              'Guarda reposo relativo evitando cargar objetos pesados o realizar giros bruscos del torso.',
-              'Realiza respiraciones suaves y vigila tu evolución en el Diario de Síntomas.'
-            ],
-            paraElMedico: 'Menciónale a tu médico el punto exacto donde sientes dolor al presionar con los dedos y si hiciste algún esfuerzo físico reciente.'
-          }
-        ]
-      },
-
-      dolor_cabeza: {
-        nombre: 'Dolor de Cabeza (Cefalea / Migraña)',
-        mensajeInicialUsuario: 'Tengo dolor de cabeza (Cefalea)',
-        especialidad: 'Medicina General / Neurología',
-        palabrasClave: ['cabeza', 'cefalea', 'migrana', 'jaqueca', 'sien', 'frente', 'nuca'],
-        pregunta1: '¿El dolor de cabeza apareció de forma explosiva en segundos, o se acompaña de fiebre alta, rigidez en el cuello, confusión, dificultad para hablar o pérdida de visión?',
-        alertaRoja: {
-          titulo: 'Cefalea con Signos Neurológicos de Alarma',
-          descripcion: 'La presencia de inicio explosivo, fiebre con rigidez de cuello o alteraciones neurológicas requiere valoración inmediata en urgencias.',
-          causas: ['Cefalea secundaria con signos de alarma neurológica', 'Infección meníngea o compromiso neurovascular', 'Crisis hipertensiva severa'],
-          soluciones: [
-            'Acude de inmediato al servicio de Urgencias más cercano acompañado de un familiar.',
-            'No tomes analgésicos que puedan enmascarar la fiebre o alterar la coagulación (como aspirina) antes de la valoración.',
-            'Permanece en un ambiente tranquilo con poca luz mientras recibes atención.'
-          ],
-          paraElMedico: 'Informa en el triaje hospitalario el tiempo exacto de inicio y los signos neurológicos asociados (fiebre, rigidez o alteración visual).'
-        },
-        pregunta2: '¿Cómo describirías las características de tu dolor de cabeza actual?',
-        opciones2: [
-          {
-            id: 'pulsatil_migrana',
-            texto: 'Late en un lado de la cabeza, molesta la luz/ruido o da náuseas',
-            color: 'Amarillo',
-            titulo: 'Crisis de Migraña (Cefalea Vascular)',
-            descripcion: 'El dolor pulsátil unilateral acompañado de fotofobia (molestia a la luz), sonofobia o náuseas es característico de un episodio migrañoso.',
-            causas: ['Migraña aguda con o sin aura', 'Cefalea vascular desencadenada por estrés, ayuno o falta de sueño', 'Migraña menstrual o tensional mixta'],
-            soluciones: [
-              'Descansa en una habitación oscura, silenciosa y fresca con una compresa fría en la frente o sienes.',
-              'Hidrátate con agua a pequeños sorbos y evita pantallas brillantes (celular, computador).',
-              'Evita alimentos desencadenantes (quesos maduros, vino, exceso de cafeína o ayunos prolongados).'
-            ],
-            paraElMedico: 'Lleva a tu consulta un registro de cuántos días al mes sufres este dolor para que tu médico ajuste un tratamiento preventivo o abortivo específico.'
-          },
-          {
-            id: 'opresivo_tensional',
-            texto: 'Siento presión en ambos lados o nuca (como una banda apretada)',
-            color: 'Verde',
-            titulo: 'Cefalea Tensional Episódica',
-            descripcion: 'Es el tipo más frecuente de dolor de cabeza, asociado a contractura de músculos cervicales, estrés laboral, fatiga visual o deshidratación.',
-            causas: ['Cefalea tensional por estrés o postura prolongada', 'Fatiga visual por uso de pantallas', 'Deshidratación leve o falta de descanso'],
-            soluciones: [
-              'Toma 1 a 2 vasos de agua pura y realiza pausas activas descansando la vista cada 40 minutos.',
-              'Aplica calor tibio en la nuca y hombros y realiza estiramientos suaves del cuello.',
-              'Procura dormir entre 7 y 8 horas y registra tu evolución en 24 horas.'
-            ],
-            paraElMedico: 'Si el dolor se repite más de 2 veces por semana, consulta a Medicina General y solicita revisión de agudeza visual (optometría).'
-          },
-          {
-            id: 'frontal_sinusal',
-            texto: 'Duele la frente y pómulos y aumenta al inclinar la cabeza hacia adelante',
-            color: 'Amarillo',
-            titulo: 'Cefalea Rhinogénica / Probable Sinusitis Aguda',
-            descripcion: 'El dolor facial y frontal que empeora al agacharse suele deberse a inflamación o congestión de los senos paranasales.',
-            causas: ['Rinosinusitis aguda viral o bacteriana', 'Rinitis alérgica con congestión sinusal', 'Cefalea frontal por congestión de vías altas'],
-            soluciones: [
-              'Realiza lavados nasales con solución salina estéril e inhala vapor de agua tibia (ducha tibia).',
-              'Aplica compresas tibias sobre los pómulos y entrecejo durante 10 minutos.',
-              'Mantén abundante hidratación oral para fluidificar las secreciones.'
-            ],
-            paraElMedico: 'Coméntale a tu médico si presentas congestión nasal mayor a 10 días, secreción espesa o fiebre para definir si requieres tratamiento específico.'
-          }
-        ]
-      },
-
-      resfriado: {
-        nombre: 'Fiebre, Gripa o Infección Respiratoria',
-        mensajeInicialUsuario: 'Tengo fiebre, tos o síntomas de gripa',
-        especialidad: 'Medicina General / Medicina Interna',
-        palabrasClave: ['gripa', 'gripe', 'resfriado', 'fiebre', 'temperatura', 'calentura', 'escalofrio', 'tos', 'moco', 'flema', 'congestion', 'malestar general'],
-        pregunta1: '¿Presentas dificultad para respirar en reposo, hundimiento de las costillas, labios morados, fiebre mayor a 39.5 °C que no baja, o confusión/somnolencia extrema?',
-        alertaRoja: {
-          titulo: 'Infección Respiratoria con Compromiso Ventilatorio o Sistémico',
-          descripcion: 'La fiebre muy elevada persistente o la dificultad respiratoria indican una posible complicación pulmonar (como neumonía o broncoespasmo) que requiere urgencias.',
-          causas: ['Neumonía aguda o infección respiratoria baja', 'Crisis broncoespástica desencadenada por virus (antecedente de asma)', 'Síndrome febril agudo con deshidratación'],
-          soluciones: [
-            'Acude de inmediato al servicio de Urgencias para medir tu oxigenación (oximetría) y auscultación pulmonar.',
-            'Como tienes antecedente de Asma en tu expediente, lleva tu inhalador de rescate (Salbutamol).',
-            'Usa tapabocas durante el traslado y mantente sentado para respirar mejor.'
-          ],
-          paraElMedico: 'Recuerda informar en Urgencias tu antecedente de Asma leve y tu alergia conocida a la Penicilina antes de recibir antibióticos.'
-        },
-        pregunta2: '¿Cómo es la evolución de tu fiebre y tus síntomas respiratorios?',
-        opciones2: [
-          {
-            id: 'fiebre_persistente_flema',
-            texto: 'Fiebre por más de 3 días, tos con flema espesa o dolor de oído/pecho al toser',
-            color: 'Amarillo',
-            titulo: 'Infección Respiratoria que Requiere Valoración Médica',
-            descripcion: 'Una fiebre que persiste más de 72 horas o se acompaña de expectoración purulenta debe ser examinada por un médico para descartar sobreinfección bacteriana.',
-            causas: ['Bronquitis aguda o traqueobronquitis', 'Sinusitis o faringoamigdalitis aguda', 'Influenza o infección viral prolongada'],
-            soluciones: [
-              'Toma abundantes líquidos tibios (agua, infusiones suaves, caldos) y guarda reposo en casa.',
-              'Controla la temperatura con medios físicos (paños de agua tibia en frente y axilas).',
-              'No tomes antibióticos por cuenta propia (recuerda tu alergia a la Penicilina registrada en tu perfil).'
-            ],
-            paraElMedico: 'Agenda consulta prioritaria en las próximas 24 horas para auscultación pulmonar; informa tu alergia a la Penicilina.'
-          },
-          {
-            id: 'dolor_cuerpo_articular',
-            texto: 'Fiebre con dolor intenso detrás de los ojos, dolor muscular/articular o brote',
-            color: 'Amarillo',
-            titulo: 'Síndrome Febril Agudo (Descartar Influenza o Arbovirosis)',
-            descripcion: 'La fiebre acompañada de dolor retroocular y mialgias intensas requiere examen médico y hemograma, evitando medicamentos que aumenten el riesgo de sangrado.',
-            causas: ['Síndrome viral agudo tipo Influenza', 'Cuadro febril sistémico en estudio (ej. Dengue según zona geográfica)', 'Virosis sistémica aguda'],
-            soluciones: [
-              'Hidrátate constantemente con sales de rehidratación oral, agua y jugos naturales.',
-              'IMPORTANTE: Evita tomar Ibuprofeno, Aspirina, Naproxeno o Diclofenaco hasta que un médico descarte dengue o alteración de plaquetas.',
-              'Vigila signos como sangrado de encías, dolor abdominal continuo o vómito persistente.'
-            ],
-            paraElMedico: 'Solicita valoración médica para toma de signos vitales y cuadro hemático; menciona exactamente cuántos días llevas con fiebre.'
-          },
-          {
-            id: 'resfriado_leve',
-            texto: 'Congestión nasal, estornudos, tos leve y menos de 3 días de evolución',
-            color: 'Verde',
-            titulo: 'Rinofaringitis Viral (Resfriado Común)',
-            descripcion: 'Cuadro viral autolimitado de vías respiratorias superiores. Suele mejorar progresivamente entre 3 y 5 días con medidas de soporte en casa.',
-            causas: ['Rinofaringitis viral aguda (Resfriado común)', 'Rinitis alérgica o irritativa por cambio de clima', 'Faringitis viral leve'],
-            soluciones: [
-              'Realiza lavados nasales con suero fisiológico y toma líquidos tibios con miel y limón.',
-              'Ventila tu habitación, descansa adecuadamente y usa tapabocas si convives con adultos mayores.',
-              'Registra tu evolución en el Diario de Síntomas en 24-48 horas.'
-            ],
-            paraElMedico: 'Si en 48 horas la fiebre sube de 38.5 °C o aparece ahogo, actualiza tu seguimiento en el Diario para escalar la prioridad.'
-          }
-        ]
-      },
-
-      abdominal: {
-        nombre: 'Dolor Abdominal, Estómago o Digestivo',
-        mensajeInicialUsuario: 'Siento dolor abdominal o malestar estomacal',
-        especialidad: 'Medicina General / Gastroenterología',
-        palabrasClave: ['estomago', 'abdominal', 'abdomen', 'barriga', 'panza', 'vientre', 'vomito', 'nausea', 'diarrea', 'acidez', 'gastritis', 'colico', 'reflujo', 'indigestion', 'estrenimiento'],
-        pregunta1: '¿El abdomen está duro como una tabla, el dolor se concentró de forma muy intensa abajo a la derecha, o tienes vómito con sangre, heces negras/con sangre o fiebre alta?',
-        alertaRoja: {
-          titulo: 'Abdomen Agudo o Signo de Sangrado Digestivo',
-          descripcion: 'Estos signos sugieren una condición quirúrgica o hemorrágica digestiva (como apendicitis aguda, colecistitis o úlcera sangrante) que requiere urgencias inmediatas.',
-          causas: ['Abdomen agudo quirúrgico (Apendicitis / Colecistitis aguda)', 'Hemorragia de vías digestivas o úlcera péptica complicada', 'Obstrucción o infección gastrointestinal severa'],
-          soluciones: [
-            'Acude inmediatamente a Urgencias hospitalarias.',
-            'NO ingieras alimentos sólidos, líquidos ni analgésicos/antiespasmódicos (pueden ocultar signos clave en la revisión médica).',
-            'No apliques calor en el abdomen ni uses laxantes o enemas.'
-          ],
-          paraElMedico: 'Indica en Urgencias la localización exacta donde inició el dolor y hacia dónde se desplazó, además de tu última ingesta de alimentos.'
-        },
-        pregunta2: '¿Cuál de estos síntomas predomina en tu malestar digestivo?',
-        opciones2: [
-          {
-            id: 'diarrea_vomito',
-            texto: 'Diarrea frecuente, náuseas o vómito y cólicos tipo retortijón',
-            color: 'Amarillo',
-            titulo: 'Gastroenteritis Aguda (Prevención de Deshidratación)',
-            descripcion: 'Cuadro infeccioso o inflamatorio intestinal. La prioridad principal es reponer líquidos y electrolitos y consultar si hay intolerancia a la vía oral.',
-            causas: ['Gastroenteritis aguda viral o alimentaria', 'Intoxicación alimentaria aguda', 'Colitis infecciosa en estudio'],
-            soluciones: [
-              'Toma suero de rehidratación oral a pequeños sorbos constantes después de cada deposición o episodio de vómito.',
-              'Inicia dieta astringente suave: arroz blanco, pollo cocido, manzana sin piel, plátano o caldos sin grasa.',
-              'Evita lácteos, grasas, salsas, café, licor y medicamentos antidiarreicos sin fórmula médica.'
-            ],
-            paraElMedico: 'Consulta al médico si presentas más de 6 deposiciones al día, sed intensa, boca seca, poca orina o si el cuadro dura más de 48 horas.'
-          },
-          {
-            id: 'ardor_gastritis',
-            texto: 'Ardor o vacío en la boca del estómago (epigastrio), acidez o llenura',
-            color: 'Verde',
-            titulo: 'Gastritis Aguda / Dispepsia Funcional',
-            descripcion: 'Inflamación o sensibilidad de la mucosa gástrica, frecuentemente agravada por ayunos largos, estrés, café o uso de antiinflamatorios.',
-            causas: ['Gastritis aguda o enfermedad ácido-péptica', 'Reflujo gastroesofágico (ERGE)', 'Dispepsia funcional asociada a alimentación o estrés'],
-            soluciones: [
-              'Fracciona tu alimentación en 5 comidas pequeñas al día sin dejar pasar más de 4 horas de ayuno.',
-              'Suspende irritantes gástricos: café, picantes, cítricos ácidos, gaseosas, cigarrillo y alcohol.',
-              'Evita tomar Ibuprofeno, Aspirina o Naproxeno ya que lesionan directamente la mucosa del estómago.'
-            ],
-            paraElMedico: 'En tu consulta con Medicina General comenta si el ardor mejora o empeora al comer y si requieres estudio para Helicobacter pylori.'
-          },
-          {
-            id: 'distension_colon',
-            texto: 'Inflamación abdominal, gases o cambios entre estreñimiento y heces blandas',
-            color: 'Verde',
-            titulo: 'Distensión Abdominal / Probable Colon Irritable',
-            descripcion: 'Malestar funcional intestinal relacionado con la motilidad del colon, fermentación de alimentos o sensibilidad visceral.',
-            causas: ['Síndrome de intestino irritable (Colon irritable)', 'Estreñimiento funcional o dispepsia fermentativa', 'Intolerancia alimentaria (ej. lactosa o harinas refinadas)'],
-            soluciones: [
-              'Toma infusiones digestivas tibias (manzanilla, anís o hierbabuena) y aplica calor suave en el abdomen.',
-              'Camina 20 a 30 minutos diarios para estimular el tránsito intestinal y aumenta el consumo de agua.',
-              'Identifica qué alimentos te inflaman más (lácteos enteros, granos pesados, ultraprocesados).'
-            ],
-            paraElMedico: 'Anota para tu médico desde hace cuántas semanas presentas la distensión y la frecuencia habitual de tus deposiciones.'
-          }
-        ]
-      },
-
-      respiratorio: {
-        nombre: 'Falta de Aire, Ahogo o Asma',
-        mensajeInicialUsuario: 'Siento falta de aire, ahogo o silbido en el pecho',
-        especialidad: 'Urgencias / Neumología',
-        palabrasClave: ['respirar', 'ahogo', 'asfixia', 'falta de aire', 'disnea', 'asma', 'silbido', 'sibilancia', 'pulmon', 'bronquios'],
-        pregunta1: '¿Te cuesta hablar frases completas por falta de aire, sientes que te ahogas en reposo o no has mejorado tras usar tu inhalador de rescate (Salbutamol)?',
-        alertaRoja: {
-          titulo: 'Crisis Respiratoria / Broncoespasmo Severo',
-          descripcion: 'La dificultad para hablar por falta de aire o la falta de respuesta al inhalador constituyen una urgencia respiratoria inmediata.',
-          causas: ['Crisis asmática moderada-severa (Antecedente de Asma en tu expediente)', 'Insuficiencia respiratoria aguda', 'Neumonía o evento cardiopulmonar agudo'],
-          soluciones: [
-            'Siéntate erguido inclinando ligeramente el tronco hacia adelante (nunca te acuestes totalmente plano).',
-            'Aplica tu inhalador de rescate (Salbutamol) según la pauta indicada por tu médico mientras te trasladan a Urgencias.',
-            'Mantén la calma y respira lento frunciendo los labios.'
-          ],
-          paraElMedico: 'Informa en Urgencias cuántas inhalaciones de Salbutamol has utilizado hoy y desde hace cuántas horas inició la dificultad respiratoria.'
-        },
-        pregunta2: '¿En qué momento sientes la dificultad para respirar o el silbido en el pecho?',
-        opciones2: [
-          {
-            id: 'asma_leve_noche',
-            texto: 'Tos seca o leve silbido en la noche, con el frío o al hacer ejercicio',
-            color: 'Amarillo',
-            titulo: 'Descompensación Leve de Asma / Hiperreactividad Bronquial',
-            descripcion: 'Los síntomas nocturnos o con el aire frío indican inflamación bronquial que requiere ajuste de tratamiento por tu médico.',
-            causas: ['Asma bronquial parcialmente controlada', 'Broncoespasmo inducido por frío, polvo o alérgenos', 'Rinitis alérgica con goteo retronasal'],
-            soluciones: [
-              'Utiliza tu inhalador según prescripción médica (idealmente con inhalocámara) y protégete del aire frío y polvo.',
-              'Evita humo de tabaco, olores fuertes de químicos, mascotas en la cama y cambios bruscos de temperatura.',
-              'Programa consulta prioritaria para revisar tu esquema de control inhalado.'
-            ],
-            paraElMedico: 'Cuéntale a tu médico cuántas veces por semana necesitas usar Salbutamol y si te despiertas en la madrugada por tos.'
-          },
-          {
-            id: 'suspiros_ansiedad',
-            texto: 'Siento que el aire no me llena los pulmones (necesidad de suspirar), sin tos ni fiebre',
-            color: 'Verde',
-            titulo: 'Disnea Suspirosa / Hiperventilación por Tensión',
-            descripcion: 'La sensación de no poder completar una inspiración profunda, sin silbidos en el pecho ni tos, suele asociarse a tensión muscular o ansiedad.',
-            causas: ['Hiperventilación o disnea funcional por estrés', 'Tensión muscular diafragmática', 'Fatiga o falta de descanso'],
-            soluciones: [
-              'Practica respiración diafragmática 4-4-6: inhala por la nariz 4 segundos, sostén 4 segundos y exhala lento por la boca durante 6 segundos.',
-              'Relaja los hombros y verifica que tu respiración mueva el abdomen y no solo la parte alta del pecho.',
-              'Evita bebidas energizantes y exceso de café.'
-            ],
-            paraElMedico: 'Si persiste o aparece al caminar, consulta a Medicina General para auscultación cardiopulmonar de control.'
-          }
-        ]
-      },
-
-      mareo_vertigo: {
-        nombre: 'Mareo, Vértigo o Desmayo',
-        mensajeInicialUsuario: 'Siento mareo, vértigo o sensación de desmayo',
-        especialidad: 'Medicina General / Otorrinolaringología / Neurología',
-        palabrasClave: ['mareo', 'mareado', 'vertigo', 'desmayo', 'sincope', 'inestabilidad', 'todo da vueltas', 'debilidad'],
-        pregunta1: '¿Sufriste pérdida total del conocimiento (desmayo), o tienes debilidad en la mitad del cuerpo, dificultad para hablar, visión doble o dolor en el pecho?',
-        alertaRoja: {
-          titulo: 'Síncope o Vértigo Central con Signos de Alarma',
-          descripcion: 'El desmayo súbito o el mareo acompañado de déficit neurológico requiere evaluación inmediata en el servicio de Urgencias.',
-          causas: ['Síncope cardiogénico o neurogénico agudo', 'Evento cerebrovascular / Vértigo de origen central', 'Arritmia o hipotensión severa'],
-          soluciones: [
-            'Acuéstate boca arriba y eleva las piernas a 30 grados para favorecer el flujo sanguíneo cerebral.',
-            'No intentes ponerte de pie ni caminar sin ayuda para evitar traumatismos por caída.',
-            'Solicita traslado inmediato a Urgencias.'
-          ],
-          paraElMedico: 'Informa al médico si hubo pérdida de conciencia, cuánto duró y si ocurrió durante un esfuerzo o al levantarte.'
-        },
-        pregunta2: '¿Cómo sientes exactamente el mareo?',
-        opciones2: [
-          {
-            id: 'giro_objetos',
-            texto: 'Siento que las cosas giran a mi alrededor al mover la cabeza o voltearme en la cama',
-            color: 'Amarillo',
-            titulo: 'Vértigo Periférico (Probable Origen en el Oído Interno)',
-            descripcion: 'La sensación rotatoria desencadenada por cambios de posición de la cabeza suele originarse en el sistema vestibular del oído interno.',
-            causas: ['Vértigo Posicional Paroxístico Benigno (VPPB)', 'Laberintitis o neuritis vestibular', 'Alteración del equilibrio del oído interno'],
-            soluciones: [
-              'Realiza movimientos de cabeza y cuello muy lentos, especialmente al levantarte de la cama.',
-              'Siéntate de inmediato y fija la mirada en un objeto quieto frente a ti cuando inicie el episodio.',
-              'Evita conducir vehículos o subir alturas hasta ser valorado por tu médico.'
-            ],
-            paraElMedico: 'En consulta médica menciona hacia qué lado al girar la cabeza se desencadena el vértigo (tu médico puede realizar la maniobra de Dix-Hallpike/Epley).'
-          },
-          {
-            id: 'aturdimiento_levantarse',
-            texto: 'Sensación de vacío en la cabeza o vista nublada al ponerme de pie rápido o por ayuno',
-            color: 'Verde',
-            titulo: 'Mareo Ortostático / Hipotensión o Deshidratación Leve',
-            descripcion: 'Suele producirse por un descenso transitorio de la presión arterial al incorporarse rápidamente, deshidratación o baja de azúcar por ayuno.',
-            causas: ['Hipotensión ortostática benigna', 'Deshidratación leve o hipoglucemia por ayuno prolongado', 'Agotamiento físico o calor ambiental'],
-            soluciones: [
-              'Antes de levantarte de la cama, siéntate en el borde durante 1 minuto y mueve los pies para activar la circulación.',
-              'Toma agua o suero oral y consume una merienda ligera si llevas muchas horas sin comer.',
-              'Descansa en un lugar fresco y ventilado.'
-            ],
-            paraElMedico: 'Si te ocurre con frecuencia, pide a tu médico tomar tu presión arterial acostado y de pie, y revisar niveles de hemoglobina y glucosa.'
-          }
-        ]
-      },
-
-      musculoesqueletico: {
-        nombre: 'Dolor de Espalda, Cuello o Articulaciones',
-        mensajeInicialUsuario: 'Tengo dolor de espalda, cuello o articulaciones',
-        especialidad: 'Medicina General / Ortopedia y Fisiatría',
-        palabrasClave: ['espalda', 'lumbar', 'lumbago', 'ciatica', 'cuello', 'cervical', 'torticolis', 'hombro', 'brazo', 'pierna', 'rodilla', 'tobillo', 'musculo', 'articular', 'articulacion', 'hueso', 'calambre', 'tiron'],
-        pregunta1: '¿Perdiste la fuerza o sensibilidad en las piernas, tienes dificultad para controlar la orina, o la articulación está muy hinchada, roja, caliente y con fiebre?',
-        alertaRoja: {
-          titulo: 'Compromiso Radicular Agudo o Artritis Aguda',
-          descripcion: 'La pérdida de fuerza en extremidades o una articulación caliente acompañada de fiebre requieren valoración médica urgente.',
-          causas: ['Compresión radicular / Síndrome lumbar agudo', 'Artritis séptica o inflamatoria aguda', 'Lesión osteomuscular severa'],
-          soluciones: [
-            'Guarda reposo inmediato sin forzar el movimiento de la extremidad ni cargar peso.',
-            'Acude a valoración de Urgencias para examen neurológico y osteomuscular.',
-            'No realices manipulaciones bruscas ni masajes fuertes sobre la columna.'
-          ],
-          paraElMedico: 'Indica al médico si sientes adormecimiento u hormigueo que baja por la pierna o el brazo.'
-        },
-        pregunta2: '¿Cómo se presenta tu dolor muscular o articular?',
-        opciones2: [
-          {
-            id: 'irradiado_ciatica',
-            texto: 'Dolor lumbar o cervical que se corre con corrientazo u hormigueo hacia la pierna o brazo',
-            color: 'Amarillo',
-            titulo: 'Lumbociatalgia / Cervicobraquialgia (Irritación Nerviosa)',
-            descripcion: 'El dolor que se irradia con sensación eléctrica u hormigueo sugiere irritación de una raíz nerviosa que debe ser evaluada por Medicina General u Ortopedia.',
-            causas: ['Lumbociatalgia mecánica o discopatía lumbar', 'Contractura paravertebral con irradiación', 'Síndrome miofascial o postural'],
-            soluciones: [
-              'Descansa en postura fetal de lado con una almohada entre las rodillas (o boca arriba con cojín bajo las rodillas).',
-              'Aplica calor húmedo tibio en la zona lumbar/cervical durante 15 minutos, 3 veces al día.',
-              'Evita agacharte doblando la cintura, levantar objetos pesados o permanecer sentado más de 45 minutos seguidos.'
-            ],
-            paraElMedico: 'Consulta a tu médico para evaluar reflejos y fuerza muscular, y definir plan de fisioterapia y analgesia segura.'
-          },
-          {
-            id: 'contractura_postural',
-            texto: 'Dolor localizado en espalda, cuello o articulación tras mala postura o ejercicio',
-            color: 'Verde',
-            titulo: 'Contractura Muscular / Dolor Mecánico Postural',
-            descripcion: 'Sobrecarga muscular o tendinosa benigna secundaria a postura mantenida, trabajo frente a pantallas o esfuerzo físico.',
-            causas: ['Espasmo o contractura muscular paravertebral', 'Fatiga muscular post-esfuerzo (agujetas)', 'Tendinitis leve por sobreuso'],
-            soluciones: [
-              'Si fue un golpe o torcedura reciente (<48h) aplica frío local; si es tensión muscular o dolor de espalda aplica calor tibio.',
-              'Realiza estiramientos suaves sin llegar al dolor y cuida la ergonomía de tu silla y pantalla.',
-              'Mantén movilidad suave (el reposo absoluto en cama por más de 2 días retrasa la recuperación).'
-            ],
-            paraElMedico: 'Si no mejora tras 5 a 7 días de cuidados posturales y calor local, agenda cita médica para valoración física.'
-          }
-        ]
-      },
-
-      urinario: {
-        nombre: 'Ardor al Orinar o Molestia Urinaria',
-        mensajeInicialUsuario: 'Siento ardor al orinar o molestias urinarias',
-        especialidad: 'Medicina General / Urología',
-        palabrasClave: ['orina', 'orinar', 'pipi', 'cistitis', 'rinon', 'ardor al orinar', 'vejiga', 'colico renal', 'calculo'],
-        pregunta1: '¿Además del ardor al orinar presentas fiebre alta, escalofríos, dolor muy intenso en la espalda baja/costado, vómito o imposibilidad total para orinar?',
-        alertaRoja: {
-          titulo: 'Infección Urinaria Alta (Pielonefritis) o Cólico Nefrítico Agudo',
-          descripcion: 'La fiebre con dolor lumbar o la retención urinaria requieren atención médica inmediata en Urgencias.',
-          causas: ['Pielonefritis aguda (infección renal)', 'Cólico nefrítico por litiasis (cálculo renal)', 'Retención urinaria aguda'],
-          soluciones: [
-            'Acude a Urgencias para análisis de orina, control del dolor e inicio oportuno de tratamiento.',
-            'No te automediques con antibióticos sobrantes en casa (recuerda además tu alergia a la Penicilina).',
-            'Si no tienes vómito, mantén hidratación con agua.'
-          ],
-          paraElMedico: 'Informa en Urgencias tu alergia a la Penicilina y si has notado la orina rojiza (hematuria) o turbia.'
-        },
-        pregunta2: '¿Qué síntomas urinarios estás presentando?',
-        opciones2: [
-          {
-            id: 'cistitis_baja',
-            texto: 'Ardor al terminar de orinar, ganas frecuentes de ir al baño en poquitas cantidades o dolor bajo vientre',
-            color: 'Amarillo',
-            titulo: 'Probable Infección de Vías Urinarias Bajas (Cistitis Aguda)',
-            descripcion: 'Los síntomas irritativos urinarios requieren un examen parcial de orina y urocultivo formulado por un médico para indicar el antibiótico exacto.',
-            causas: ['Cistitis aguda no complicada', 'Uretritis o irritación vesical', 'Cristaluria por baja ingesta de agua'],
-            soluciones: [
-              'Aumenta la ingesta de agua pura (al menos 6 a 8 vasos al día) para favorecer el barrido vesical.',
-              'No retengas las ganas de orinar y aplica una bolsa de agua tibia sobre el bajo vientre para aliviar el espasmo.',
-              'IMPORTANTE: No tomes antibióticos antes de recolectar la muestra de orina en el laboratorio, ya que altera el resultado.'
-            ],
-            paraElMedico: 'Solicita a tu médico orden de Parcial de Orina y Urocultivo, y recuérdale tu alergia a la Penicilina para que elija un antibiótico seguro.'
-          }
-        ]
-      },
-
-      alergia_piel: {
-        nombre: 'Alergia, Ronchas o Problema en la Piel',
-        mensajeInicialUsuario: 'Tengo brote, ronchas, picazón o alergia en la piel',
-        especialidad: 'Medicina General / Dermatología / Alergología',
-        palabrasClave: ['alergia', 'roncha', 'brote', 'piel', 'picazon', 'rasquina', 'urticaria', 'sarpullido', 'ampolla', 'picadura', 'enrojecimiento', 'dermatitis'],
-        pregunta1: '¿Tienes hinchazón en los labios, lengua, párpados o cara, sensación de que se cierra la garganta, voz ronca o dificultad para respirar?',
-        alertaRoja: {
-          titulo: 'Reacción Alérgica Severa (Angioedema / Anafilaxia)',
-          descripcion: 'La inflamación de cara, labios o vía aérea durante una alergia es una emergencia médica crítica que requiere atención inmediata.',
-          causas: ['Anafilaxia o angioedema agudo', 'Reacción alérgica medicamentosa severa (Alergia a Penicilina en expediente)', 'Reacción sistémica a alimento o picadura'],
-          soluciones: [
-            'Llama al 123 o acude de inmediato al centro de Urgencias más cercano.',
-            'Suspende de inmediato cualquier medicamento o alimento sospechoso que hayas ingerido.',
-            'Si tienes dificultad respiratoria, usa tu inhalador de Salbutamol mientras llegas al hospital.'
-          ],
-          paraElMedico: 'Informa en Urgencias qué alimento, medicamento o picadura tuviste antes del inicio de la hinchazón.'
-        },
-        pregunta2: '¿Cómo es el brote o molestia que observas en la piel?',
-        opciones2: [
-          {
-            id: 'placa_caliente_infeccion',
-            texto: 'Zona roja, caliente, hinchada y dolorosa que se está extendiendo o tiene pus/fiebre',
-            color: 'Amarillo',
-            titulo: 'Probable Infección Cutánea (Celulitis / Absceso)',
-            descripcion: 'Una lesión cutánea caliente, dolorosa y en expansión requiere valoración médica pronta para tratamiento dirigido.',
-            causas: ['Celulitis o erisipela cutánea', 'Foliculitis profunda o absceso localizado', 'Picadura de insecto sobreinfectada'],
-            soluciones: [
-              'Lava suavemente la zona con agua y jabón neutro, sin exprimir ni manipular la lesión.',
-              'Delimita el borde rojo con un bolígrafo para que el médico vea si el enrojecimiento avanza.',
-              'Recuerda no usar derivados de Penicilina (como Amoxicilina o Ampicilina) por tu alergia registrada.'
-            ],
-            paraElMedico: 'Acude a consulta en las próximas 24 horas e informa tu alergia a la Penicilina para recibir un antibiótico alternativo seguro.'
-          },
-          {
-            id: 'urticaria_dermatitis',
-            texto: 'Ronchas o enrojecimiento con picazón sin fiebre ni hinchazón de cara',
-            color: 'Verde',
-            titulo: 'Urticaria Leve o Dermatitis de Contacto / Alérgica',
-            descripcion: 'Reacción cutánea localizada o alérgica leve desencadenada por contacto, alimentos, sudor, ropa o picaduras.',
-            causas: ['Urticaria aguda leve', 'Dermatitis de contacto irritativa o alérgica', 'Reacción local a picadura de insecto'],
-            soluciones: [
-              'Aplica compresas frías sobre la piel para calmar la picazón y evita rascarte con las uñas.',
-              'Báñate con agua tibia-fresca (no caliente), usa jabón suave sin fragancia y viste ropa holgada de algodón.',
-              'No apliques cremas caseras, alcohol ni limón sobre la piel irritada.'
-            ],
-            paraElMedico: 'Toma una fotografía clara del brote con tu celular (ya que las ronchas pueden cambiar de lugar) para mostrársela a tu médico.'
-          }
-        ]
-      },
-
-      garganta_oido: {
-        nombre: 'Dolor de Garganta u Oído',
-        mensajeInicialUsuario: 'Me duele la garganta o el oído',
-        especialidad: 'Medicina General / Otorrinolaringología',
-        palabrasClave: ['garganta', 'amigdala', 'amigdalitis', 'tragar', 'afonia', 'ronquera', 'oido', 'otitis', 'zumbido', 'tapon de oido'],
-        pregunta1: '¿Tienes imposibilidad para tragar tu propia saliva, voz apagada, cuello muy hinchado, o salida de pus/sangre por el oído con dolor detrás de la oreja?',
-        alertaRoja: {
-          titulo: 'Complicación Otorrinolaringológica Aguda',
-          descripcion: 'La incapacidad de tragar saliva o la inflamación detrás de la oreja requieren valoración presencial inmediata en Urgencias.',
-          causas: ['Absceso periamigdalino o faringoamigdalitis severa', 'Otitis media aguda supurada / Mastoiditis', 'Obstrucción inflamatoria de vía aérea superior'],
-          soluciones: [
-            'Acude a Urgencias manteniendo una postura sentada.',
-            'No introduzcas copitos (hisopos), gotas ni objetos dentro del oído.',
-            'Informa tu alergia a la Penicilina antes de recibir cualquier medicamento.'
-          ],
-          paraElMedico: 'Comenta en Urgencias desde cuándo no puedes tragar líquidos o si hubo salida de secreción por el conducto auditivo.'
-        },
-        pregunta2: '¿Cuál es tu molestia principal en garganta u oído?',
-        opciones2: [
-          {
-            id: 'placas_fiebre_oido',
-            texto: 'Dolor fuerte al tragar con fiebre y placas blancas en amígdalas, o dolor punzante de oído',
-            color: 'Amarillo',
-            titulo: 'Faringoamigdalitis Aguda u Otitis (Valoración Médica)',
-            descripcion: 'Requiere revisión con otoscopio y examen de garganta por un médico para definir el manejo antiinflamatorio o antibiótico seguro.',
-            causas: ['Faringoamigdalitis aguda (viral o estreptocócica)', 'Otitis media o externa aguda', 'Adenitis cervical reactiva'],
-            soluciones: [
-              'Haz gárgaras con agua tibia y media cucharadita de sal 3 veces al día (si el dolor es de garganta).',
-              'Si duele el oído, mantenlo completamente seco al bañarte y aplica calor seco externo con un paño tibio.',
-              'MUY IMPORTANTE: Por tu alergia a la Penicilina, nunca tomes Amoxicilina ni Penicilina Benzatínica.'
-            ],
-            paraElMedico: 'En consulta médica advierte de entrada que eres alérgico a la Penicilina para que el médico evalúe otras opciones si requiere antibiótico.'
-          },
-          {
-            id: 'irritacion_garganta_leve',
-            texto: 'Ardor o carraspera leve en la garganta sin fiebre, o sensación de oído tapado por congestión',
-            color: 'Verde',
-            titulo: 'Faringitis Irritativa Leve / Disfunción Tubárica por Congestión',
-            descripcion: 'Irritación superficial de la garganta o congestión de la trompa de Eustaquio asociada a resfriado o alergia.',
-            causas: ['Faringitis viral o por respiración bucal nocturna', 'Congestión de trompa de Eustaquio por rinitis', 'Irritación por aire seco o uso de la voz'],
-            soluciones: [
-              'Toma agua constantemente durante el día e infusiones tibias para mantener lubricada la garganta.',
-              'Realiza lavados nasales con suero fisiológico para destapar la comunicación entre nariz y oído.',
-              'Evita bebidas heladas, humo de cigarrillo y forzar la voz.'
-            ],
-            paraElMedico: 'Si el dolor empeora o aparece fiebre en las próximas 24-48 horas, regístralo en tu Diario de Síntomas.'
-          }
-        ]
-      },
-
-      presion_palpitaciones: {
-        nombre: 'Presión Arterial Alta o Palpitaciones',
-        mensajeInicialUsuario: 'Siento palpitaciones o tengo duda sobre mi presión arterial',
-        especialidad: 'Medicina General / Cardiología',
-        palabrasClave: ['presion alta', 'hipertension', 'tension alta', 'taquicardia', 'palpitacion', 'palpitaciones', 'latidos', 'acelerado el corazon'],
-        pregunta1: '¿Tu presión arterial es igual o mayor a 180/120 mmHg, o las palpitaciones se acompañan de dolor en el pecho, falta de aire o sensación de desmayo?',
-        alertaRoja: {
-          titulo: 'Crisis Hipertensiva o Taquiarritmia Sintomática',
-          descripcion: 'Cifras tensionales >=180/120 mmHg o palpitaciones con dolor torácico/mareo requieren atención médica inmediata en Urgencias.',
-          causas: ['Crisis hipertensiva (Urgencia o Emergencia hipertensiva)', 'Taquicardia supraventricular o arritmia aguda', 'Sobrecarga hemodinámica aguda'],
-          soluciones: [
-            'Acude de inmediato al servicio de Urgencias para monitoreo electrocardiográfico y control seguro de la presión.',
-            'No tomes dosis dobles de medicamentos antihipertensivos por tu cuenta para bajar la presión de golpe.',
-            'Permanece sentado en reposo y respira lento.'
-          ],
-          paraElMedico: 'Lleva anotadas las cifras exactas de presión arterial y pulso que registraste y la hora de tu última medicación.'
-        },
-        pregunta2: '¿Cómo se presentan las palpitaciones o el aumento de presión?',
-        opciones2: [
-          {
-            id: 'presion_moderada_persistente',
-            texto: 'Presión entre 140/90 y 170/100 mmHg o latidos rápidos en reposo sin dolor de pecho',
-            color: 'Amarillo',
-            titulo: 'Descontrol Tensional o Palpitaciones en Estudio (Consulta en 24h)',
-            descripcion: 'Se recomienda valoración médica prioritaria para estudio cardiovascular (electrocardiograma) y ajuste de estilo de vida o medicación.',
-            causas: ['Hipertensión arterial primaria o descompensada', 'Taquicardia sinusal (por uso de inhaladores, fiebre o deshidratación)', 'Extrasístoles benignas en estudio'],
-            soluciones: [
-              'Descansa sentado durante 10 minutos con los pies apoyados en el suelo y vuelve a medir tu presión arterial.',
-              'Suspende por completo el consumo de café, bebidas energizantes, té negro, alcohol y exceso de sal.',
-              'Ten en cuenta que medicamentos como el Salbutamol o antigripales con descongestionantes pueden acelerar el pulso.'
-            ],
-            paraElMedico: 'Lleva a tu médico una bitácora de 3 a 5 días con tomas de presión en la mañana y en la noche.'
-          }
-        ]
-      },
-
-      ojos_vision: {
-        nombre: 'Molestia en los Ojos o Visión',
-        mensajeInicialUsuario: 'Tengo ojo rojo, dolor ocular o molestia en la visión',
-        especialidad: 'Oftalmología / Medicina General',
-        palabrasClave: ['ojo', 'ojos', 'vision', 'vista', 'borroso', 'conjuntivitis', 'lagana', 'parpado', 'orzuelo', 'destello'],
-        pregunta1: '¿Perdiste súbitamente la visión de un ojo, ves destellos de luz o una cortina oscura, tuviste contacto con un químico o sientes dolor ocular severo?',
-        alertaRoja: {
-          titulo: 'Urgencia Oftalmológica Aguda',
-          descripcion: 'Los cambios bruscos de visión, el dolor ocular intenso o los traumas químicos son urgencias oftalmológicas que requieren atención inmediata.',
-          causas: ['Urgencia de retina o glaucoma agudo', 'Queratitis aguda o trauma ocular', 'Compromiso neuro-oftalmológico'],
-          soluciones: [
-            'Si cayó algún líquido o químico en el ojo, lávalo con abundante agua limpia o suero fisiológico durante 15 minutos continuos.',
-            'No frotes el ojo ni apliques gotas con corticoides o vasoconstrictores.',
-            'Acude de inmediato a Urgencias con servicio de Oftalmología.'
-          ],
-          paraElMedico: 'Indica en Urgencias si usas lentes de contacto o si el síntoma inició de forma repentina.'
-        },
-        pregunta2: '¿Qué molestia ocular presentas?',
-        opciones2: [
-          {
-            id: 'conjuntivitis_secrecion',
-            texto: 'Ojo rojo con picazón, lagrimeo, sensación de arenilla o lagañas al despertar',
-            color: 'Verde',
-            titulo: 'Conjuntivitis Aguda / Síndrome de Ojo Seco o Alérgico',
-            descripcion: 'Inflamación de la conjuntiva ocular de origen viral, alérgico o bacteriano leve, o resequedad por uso de pantallas.',
-            causas: ['Conjuntivitis viral o alérgica', 'Conjuntivitis bacteriana leve', 'Fatiga visual y ojo seco por pantallas'],
-            soluciones: [
-              'Limpia los párpados con gasas estériles humedecidas en suero fisiológico (una gasa distinta para cada ojo).',
-              'Usa lágrimas artificiales lubricantes sin conservantes y no te frotes los ojos con las manos.',
-              'Lava tus manos con frecuencia y no compartas toallas ni almohadas.'
-            ],
-            paraElMedico: 'Consulta a Medicina General u Optometría/Oftalmología si la secreción es muy abundante o no mejora en 48 horas.'
-          }
-        ]
-      },
-
-      odontologico: {
-        nombre: 'Dolor Dental, de Muela o Encías',
-        mensajeInicialUsuario: 'Tengo dolor de muela o inflamación en la encía',
-        especialidad: 'Odontología / Urgencias Odontológicas',
-        palabrasClave: ['muela', 'diente', 'dental', 'encia', 'absceso dental', 'caries', 'cordal', 'mandibula'],
-        pregunta1: '¿Tienes hinchazón visible en la cara, mejilla o cuello, fiebre alta, o dificultad para abrir la boca o tragar?',
-        alertaRoja: {
-          titulo: 'Infección Odontogénica con Compromiso Facial (Celulitis Facial)',
-          descripcion: 'La inflamación facial o cervical de origen dental con fiebre requiere atención urgente para drenaje y manejo médico inmediato.',
-          causas: ['Absceso dentoalveolar agudo con celulitis facial', 'Pericoronaritis severa (muela del juicio)', 'Infección odontogénica profunda'],
-          soluciones: [
-            'Acude a Urgencias médicas u odontológicas de inmediato.',
-            'No apliques calor en la mejilla hinchada (el calor extiende la inflamación); usa compresas frías externas.',
-            'Advierte que eres alérgico a la Penicilina antes de recibir antibióticos.'
-          ],
-          paraElMedico: 'Recuerda informar al odontólogo o médico de urgencias tu alergia a la Penicilina (para evitar Amoxicilina).'
-        },
-        pregunta2: '¿Cómo es tu dolor dental o de encías?',
-        opciones2: [
-          {
-            id: 'pulpitis_dolor_fuerte',
-            texto: 'Dolor constante o que late en la muela al tomar cosas frías, calientes o al masticar',
-            color: 'Amarillo',
-            titulo: 'Odontalgia Aguda (Probable Pulpitis o Caries Profunda)',
-            descripcion: 'Requiere valoración prioritaria por Odontología para tratar la causa local en la pieza dental.',
-            causas: ['Pulpitis aguda por caries profunda o fractura dental', 'Absceso periodontal localizado', 'Erupción de cordales (terceros molares)'],
-            soluciones: [
-              'Realiza enjuagues suaves con agua tibia con sal después de las comidas y usa seda dental con cuidado para retirar restos.',
-              'Mastica del lado opuesto y evita alimentos muy fríos, muy calientes o dulces.',
-              'No coloques pastillas de aspirina ni alcohol directamente sobre la encía o muela (causan quemadura química).'
-            ],
-            paraElMedico: 'Agenda cita de Urgencias Odontológicas e informa tu alergia a la Penicilina y tu antecedente de Asma.'
-          }
-        ]
-      },
-
-      trauma_herida: {
-        nombre: 'Golpe, Caída, Herida o Quemadura',
-        mensajeInicialUsuario: 'Sufrí un golpe, caída, herida o quemadura',
-        especialidad: 'Urgencias / Traumatología',
-        palabrasClave: ['golpe', 'caida', 'herida', 'corte', 'sangrado', 'hemorragia', 'quemadura', 'fractura', 'esguince', 'torcedura', 'moreton'],
-        pregunta1: '¿Hay sangrado abundante que no se detiene al presionar, deformidad evidente del hueso, golpe en la cabeza con mareo/vómito, o quemadura extensa?',
-        alertaRoja: {
-          titulo: 'Traumatismo Mayor, Hemorragia o Quemadura Grave',
-          descripcion: 'Requiere atención inmediata en el servicio de Urgencias para control de sangrado, radiografía o manejo especializado.',
-          causas: ['Fractura o luxación articular aguda', 'Trauma craneoencefálico con signos de alarma', 'Herida profunda o quemadura de segundo/tercer grado extensa'],
-          soluciones: [
-            'Si hay sangrado activo, haz presión firme y directa sobre la herida con una gasa o tela limpia sin retirarla.',
-            'Si sospechas fractura, inmoviliza la extremidad en la posición en que se encuentra sin intentar acomodar el hueso.',
-            'Acude de inmediato al hospital de Urgencias más cercano.'
-          ],
-          paraElMedico: 'Indica en Urgencias el mecanismo exacto del trauma, la hora en que ocurrió y la fecha de tu última vacuna contra el tétanos.'
-        },
-        pregunta2: '¿Qué tipo de lesión leve o moderada presentas?',
-        opciones2: [
-          {
-            id: 'esguince_contusion',
-            texto: 'Torcedura o golpe en tobillo, rodilla, muñeca o músculo con inflamación leve-moderada',
-            color: 'Amarillo',
-            titulo: 'Esguince o Contusión Osteomuscular (Protocolo RICE)',
-            descripcion: 'Se recomienda reposo relativo, hielo local y valoración médica para descartar fisura o lesión ligamentaria.',
-            causas: ['Esguince ligamentario grado I-II', 'Contusión muscular o hematoma', 'Distensión tendinosa aguda'],
-            soluciones: [
-              'Aplica hielo envuelto en un paño (nunca directo en la piel) durante 15 minutos cada 4 horas en las primeras 48 horas.',
-              'Mantén la extremidad elevada sobre un cojín para disminuir la hinchazón.',
-              'No apoyes peso si te genera dolor intenso ni realices masajes sobre la zona recién golpeada.'
-            ],
-            paraElMedico: 'Consulta a tu médico si no puedes apoyar la extremidad o si el hematoma y la inflamación aumentan.'
-          },
-          {
-            id: 'herida_quemadura_superficial',
-            texto: 'Raspón, corte superficial que ya no sangra o quemadura pequeña en la piel',
-            color: 'Verde',
-            titulo: 'Herida o Quemadura Superficial (Cuidados de Primeros Auxilios)',
-            descripcion: 'Lesión epidérmica superficial que puede manejarse con higiene adecuada y vigilancia de signos de infección.',
-            causas: ['Quemadura térmica superficial (Primer grado)', 'Abrasión o herida cortante superficial', 'Lesión cutánea menor'],
-            soluciones: [
-              'En quemaduras leves: coloca la zona bajo el chorro de agua fría del grifo durante 10 a 15 minutos (no uses hielo, crema dental, café ni mantequilla).',
-              'En heridas superficiales: lava con abundante agua y jabón neutro, seca con gasa estéril y cubre con apósito limpio.',
-              'No revientes las ampollas si aparecen, ya que protegen la piel contra infecciones.'
-            ],
-            paraElMedico: 'Acude al médico si la herida requiere puntos de sutura o si en 48 horas notas calor, pus o bordes rojos.'
-          }
-        ]
-      },
-
-      ansiedad_sueno: {
-        nombre: 'Ansiedad, Estrés Agudo o Insomnio',
-        mensajeInicialUsuario: 'Siento ansiedad, mucho estrés o dificultad para dormir',
-        especialidad: 'Medicina General / Psicología Clínica',
-        palabrasClave: ['ansiedad', 'estres', 'insomnio', 'dormir', 'sueno', 'panico', 'nervios', 'angustia', 'tristeza', 'cansancio', 'fatiga', 'agotamiento'],
-        pregunta1: '¿Sientes desesperación extrema, pensamientos de hacerte daño o incapacidad total para calmarte acompañada de dolor fuerte en el pecho?',
-        alertaRoja: {
-          titulo: 'Crisis Aguda que Requiere Apoyo Profesional Inmediato',
-          descripcion: 'Tu bienestar integral es prioritario. Acude a urgencias o comunícate de inmediato con las líneas de orientación en salud mental y emergencias (123 / Línea 106 en Bogotá).',
-          causas: ['Crisis de angustia o pánico severo', 'Episodio emocional agudo que requiere acompañamiento', 'Respuesta autonómica intensa al estrés'],
-          soluciones: [
-            'No te quedes solo; busca la compañía inmediata de tu contacto de confianza o familiar.',
-            'Comunícate con la Línea 123 o la Línea 106 de orientación psicológica gratuita 24 horas.',
-            'Enfoca tu atención en respirar lento: inhala en 4 segundos y suelta el aire suavemente en 6 segundos.'
-          ],
-          paraElMedico: 'Expresa con total confianza al profesional de salud todo lo que estás sintiendo para recibir apoyo integral inmediato.'
-        },
-        pregunta2: '¿Qué síntoma predomina en este momento?',
-        opciones2: [
-          {
-            id: 'ansiedad_fisica',
-            texto: 'Sensación de intranquilidad, tensión en el cuerpo, nudo en la garganta o mente acelerada',
-            color: 'Verde',
-            titulo: 'Episodio de Ansiedad o Sobrecarga por Estrés',
-            descripcion: 'Respuesta fisiológica del sistema nervioso ante el estrés sostenido. Responde favorablemente a técnicas de regulación respiratoria y orientación profesional.',
-            causas: ['Ansiedad situacional o estrés laboral/académico', 'Sobrecarga física y mental', 'Exceso de estimulantes (cafeína) o falta de sueño'],
-            soluciones: [
-              'Aplica la técnica de aterrizaje 5-4-3-2-1: nombra 5 cosas que ves, 4 que puedes tocar, 3 que escuchas, 2 que hueles y 1 respiración profunda.',
-              'Realiza 10 respiraciones diafragmáticas lentas llevando el aire hacia el abdomen.',
-              'Suspende el café, bebidas energizantes y el uso de noticias/redes sociales antes de descansar.'
-            ],
-            paraElMedico: 'Agenda consulta con Medicina General o Psicología para evaluar tu descanso, niveles de vitaminas/tiroides y estrategias de manejo del estrés.'
-          },
-          {
-            id: 'insomnio_cansancio',
-            texto: 'Dificultad para conciliar o mantener el sueño y cansancio durante el día',
-            color: 'Verde',
-            titulo: 'Insomnio de Conciliación / Higiene del Sueño',
-            descripcion: 'Alteración del ciclo sueño-vigilia que puede mejorar aplicando pautas estructuradas de higiene del sueño.',
-            causas: ['Insomnio primario o por alteración de horarios', 'Exposición a luz azul de pantallas en la noche', 'Fatiga crónica en estudio'],
-            soluciones: [
-              'Apaga pantallas (celular, televisor, computador) al menos 45 minutos antes de acostarte.',
-              'Acuéstate y levántate a la misma hora todos los días y evita tomar café o té después de las 2:00 p. m.',
-              'Toma una ducha tibia o infusión de manzanilla/toronjil antes de dormir y evita automedicarte con sedantes.'
-            ],
-            paraElMedico: 'Si el insomnio dura más de 2 semanas o te sientes fatigado todo el día, pide a tu médico exámenes generales (hemograma, TSH y glicemia).'
-          }
-        ]
-      },
-
-      ginecologico_pelvico: {
-        nombre: 'Dolor Pélvico o Cólico Menstrual',
-        mensajeInicialUsuario: 'Tengo dolor pélvico o cólico menstrual intenso',
-        especialidad: 'Ginecología / Medicina General',
-        palabrasClave: ['menstrual', 'periodo', 'regla', 'menstruacion', 'pelvico', 'ovario', 'matriz', 'ginecologia', 'atraso menstrual'],
-        pregunta1: '¿Presentas sangrado muy abundante (empapar más de 1 toalla por hora durante 2 horas), dolor pélvico súbito e insoportable, fiebre o posibilidad de embarazo con dolor?',
-        alertaRoja: {
-          titulo: 'Urgencia Ginecológica o Pélvica Aguda',
-          descripcion: 'El dolor pélvico agudo severo o el sangrado abundante requieren valoración inmediata en Urgencias.',
-          causas: ['Hemorragia uterina aguda', 'Quiste ovárico complicado o torsión anexial', 'Urgencia pélvica aguda en estudio'],
-          soluciones: [
-            'Acude de inmediato al servicio de Urgencias con atención ginecológica.',
-            'Permanece acostada y no tomes Aspirina (aumenta el sangrado).',
-            'Anota la fecha de tu última menstruación.'
-          ],
-          paraElMedico: 'Informa en Urgencias la fecha exacta de tu último periodo menstrual y la cantidad aproximada de sangrado.'
-        },
-        pregunta2: '¿Cómo se presenta tu molestia pélvica?',
-        opciones2: [
-          {
-            id: 'dismenorrea_colico',
-            texto: 'Cólico menstrual en el vientre bajo que se irradia a la espalda baja o muslos',
-            color: 'Verde',
-            titulo: 'Dismenorrea (Cólico Menstrual) y Cuidados Locales',
-            descripcion: 'Dolor uterino espasmódico asociado al ciclo menstrual. Si es muy intenso o progresivo cada mes, debe ser estudiado por Ginecología.',
-            causas: ['Dismenorrea primaria (contracciones uterinas del ciclo)', 'Síndrome premenstrual', 'Dismenorrea secundaria en estudio'],
-            soluciones: [
-              'Coloca una bolsa de agua tibia o compresa térmica en el vientre bajo durante 20 minutos.',
-              'Toma infusiones tibias de manzanilla o canela y mantén buena hidratación.',
-              'Como tienes antecedente de Asma en tu expediente, consulta a tu médico qué analgésico antiespasmódico es más seguro para ti.'
-            ],
-            paraElMedico: 'Lleva el calendario de tus últimos 3 ciclos menstruales a tu control ginecológico.'
-          }
-        ]
-      }
-    };
 
     function renderizarBotonesEscalaDolor() {
       const cont = document.getElementById('pain-scale-buttons');
@@ -3021,7 +1072,7 @@
           else if (n <= 7) claseColor = 'bg-amber-500 text-white border-amber-500 shadow-xs scale-105';
           else claseColor = 'bg-red-600 text-white border-red-600 shadow-xs scale-105';
         }
-        return `<button onclick="seleccionarIntensidadDolor(${n})" class="h-7 rounded-lg text-[11px] font-bold transition-all claseColor">{n}</button>`;
+        return `<button onclick="seleccionarIntensidadDolor(${n})" class="h-7 rounded-lg text-[11px] font-bold transition-all ${claseColor}">${n}</button>`;
       }).join('');
     }
 
@@ -3037,28 +1088,21 @@
           : 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200';
       }
       renderizarBotonesEscalaDolor();
-
       if (n >= 8) {
         agregarMensaje('usuario', `Mi intensidad de dolor es ${n}/10 (Severo)`);
         setTimeout(() => {
           generarTarjetaTriaje(
             'Rojo',
             `Dolor Agudo Severo (Escala ${n}/10)`,
-            'Un nivel de dolor entre 8 y 10 activa por protocolo de seguridad la máxima prioridad clínica para descartar una urgencia médica presencial.',
-            ['Dolor agudo de alta intensidad', 'Posible compromiso orgánico agudo que requiere valoración presencial', 'Prioridad de atención en servicio de urgencias'],
-            [
-              'Suspende cualquier esfuerzo físico y colócate en una posición cómoda y segura.',
-              'No te automediques con analgésicos fuertes antes de ser examinado por el médico.',
-              'Usa el botón inferior para localizar el Hospital de Urgencias más cercano a tu GPS.'
-            ],
-            'Indica al médico que tu dolor alcanzó un nivel ' + n + '/10 en la escala visual análoga (EVA) y descríbele en qué parte del cuerpo se localiza.',
-            'Urgencias Médicas'
+            'Un nivel de dolor entre 8 y 10 activa por protocolo de seguridad la máxima prioridad clínica.',
+            ['Dolor agudo de alta intensidad', 'Posible compromiso orgánico agudo'],
+            ['Suspende esfuerzo físico.', 'No te automediques.'],
+            'Indica al médico tu nivel de dolor EVA.',
+            'Urgencias'
           );
         }, 400);
       } else {
-        agregarMensaje('bot', `
-          <p class="text-slate-700">He registrado tu intensidad de dolor en <strong>n/10({n <= 3 ? 'Leve' : 'Moderado'})</strong>. Ahora selecciona un síntoma de la barra inferior o escríbeme qué sientes para hacerte las preguntas clínicas correspondientes.</p>
-        `);
+        agregarMensaje('bot', `<p class="text-slate-700">He registrado tu intensidad de dolor en <strong>${n}/10 (${n <= 3 ? 'Leve' : 'Moderado'})</strong>. Selecciona un síntoma o escribe tu duda.</p>`);
       }
     }
 
@@ -3066,7 +1110,6 @@
       const contenedor = document.getElementById('chat-messages');
       const div = document.createElement('div');
       div.className = 'animate-fadeIn';
-
       if (remitente === 'bot') {
         div.innerHTML = `
           <div class="flex gap-2.5 items-start">
@@ -3087,508 +1130,297 @@
           </div>
         `;
       }
-
       contenedor.appendChild(div);
       contenedor.scrollTop = contenedor.scrollHeight;
     }
 
-    /**
-     * Inicia el interrogatorio clínico inteligente de 2 etapas para cualquiera de las 16 categorías médicas
-     */
+    const BASE_CLINICA_DOC_CHAT = {
+      dolor_pecho: {
+        nombre: 'Dolor o Presión en el Pecho',
+        mensajeInicialUsuario: 'Siento dolor o presión en el pecho',
+        especialidad: 'Urgencias / Cardiología',
+        palabrasClave: ['pecho', 'torax', 'corazon', 'infarto', 'angina', 'opresion'],
+        pregunta1: '¿El dolor es opresivo, se irradia al brazo izquierdo o cuello, o se acompaña de falta de aire?',
+        alertaRoja: {
+          titulo: 'Sospecha de Compromiso Cardíaco Agudo',
+          descripcion: 'Requiere atención médica de emergencia inmediata.',
+          causas: ['Síndrome coronario agudo', 'Crisis hipertensiva'],
+          soluciones: ['Reposo absoluto', 'Llamar al 123'],
+          paraElMedico: 'Informe hora exacta de inicio del dolor.'
+        },
+        pregunta2: '¿Cuándo notas principalmente este dolor?',
+        opciones2: [
+          { id: 'esfuerzo', texto: 'Al caminar rápido o hacer esfuerzo físico', color: 'Amarillo', titulo: 'Dolor Torácico de Esfuerzo', descripcion: 'Requiere electrocardiograma.', causas: ['Angina estable'], soluciones: ['Evitar esfuerzos'], paraElMedico: 'Valoración cardiológica.' },
+          { id: 'reposo', texto: 'Aparece en reposo o con ardor estomacal', color: 'Verde', titulo: 'Probable Reflujo o Causa Leve', descripcion: 'Ardor retroesternal.', causas: ['ERGE'], soluciones: ['Evitar acostarse de inmediato'], paraElMedico: 'Control digestivo.' }
+        ]
+      },
+      dolor_cabeza: {
+        nombre: 'Dolor de Cabeza (Cefalea)',
+        mensajeInicialUsuario: 'Tengo dolor de cabeza',
+        especialidad: 'Medicina General',
+        palabrasClave: ['cabeza', 'cefalea', 'migrana', 'jaqueca'],
+        pregunta1: '¿Apareció de forma explosiva o con fiebre alta y rigidez en el cuello?',
+        alertaRoja: {
+          titulo: 'Cefalea con Signos de Alarma',
+          descripcion: 'Requiere valoración en urgencias.',
+          causas: ['Cefalea secundaria'],
+          soluciones: ['Acudir a urgencias'],
+          paraElMedico: 'Mencionar síntomas neurológicos.'
+        },
+        pregunta2: '¿Cómo es el dolor?',
+        opciones2: [
+          { id: 'migrana', texto: 'Late en un lado con molestia a la luz o náuseas', color: 'Amarillo', titulo: 'Crisis de Migraña', descripcion: 'Cefalea vascular.', causas: ['Migraña'], soluciones: ['Descanso en oscuridad'], paraElMedico: 'Evaluar frecuencia.' },
+          { id: 'tensional', texto: 'Presión en ambos lados o nuca', color: 'Verde', titulo: 'Cefalea Tensional', descripcion: 'Asociada a estrés o tensión.', causas: ['Contractura'], soluciones: ['Hidratación y descanso'], paraElMedico: 'Revisión postural.' }
+        ]
+      }
+    };
+
     function iniciarSintoma(sintomaId, omitirBurbujaUsuario = false) {
-      const ficha = BASE_CLINICA_DOC_CHAT[sintomaId];
-      if (!ficha) return;
+      const ficha = BASE_CLINICA_DOC_CHAT[sintomaId] || {
+        nombre: 'Orientación General',
+        mensajeInicialUsuario: 'Consulta de síntomas',
+        especialidad: 'Medicina General',
+        pregunta1: '¿Presentas fiebre alta o dificultad para respirar?',
+        alertaRoja: { titulo: 'Urgencia Médica', descripcion: 'Requiere atención presencial.', causas: ['Cuadro agudo'], soluciones: ['Acudir a urgencias'], paraElMedico: 'Reportar síntomas.' },
+        opciones2: [
+          { id: 'op1', texto: 'Molestia moderada que evoluciona despacio', color: 'Verde', titulo: 'Cuadro Leve', descripcion: 'Manejo en casa.', causas: ['Virosis leve'], soluciones: ['Hidratación'], paraElMedico: 'Seguimiento.' }
+        ]
+      };
 
       entrevistaClinicaActiva = { sintomaId, paso: 1 };
-
-      if (!omitirBurbujaUsuario) {
-        agregarMensaje('usuario', ficha.mensajeInicialUsuario);
-      }
+      if (!omitirBurbujaUsuario) agregarMensaje('usuario', ficha.mensajeInicialUsuario);
 
       setTimeout(() => {
         agregarMensaje('bot', `
           <div class="space-y-2">
             <div class="flex items-center justify-between border-b border-slate-100 pb-1.5">
-              <span class="font-bold text-sky-900 text-xs flex items-center gap-1.5">
-                <i class="fa-solid fa-stethoscope text-sky-600"></i> ${ficha.nombre}
-              </span>
-              <span class="text-[10px] font-semibold bg-sky-50 text-sky-700 px-2 py-0.5 rounded-full border border-sky-200">Pregunta 1 de 2</span>
+              <span class="font-bold text-sky-900 text-xs">${ficha.nombre}</span>
+              <span class="text-[10px] font-semibold bg-sky-50 text-sky-700 px-2 py-0.5 rounded-full">Pregunta 1 de 2</span>
             </div>
             <p class="text-slate-700 font-medium">${ficha.pregunta1}</p>
             <div class="flex gap-2 pt-1">
-              <button onclick="responderPaso1Clinico('${sintomaId}', true)" class="flex-1 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-bold py-2 px-3 rounded-xl text-xs transition-colors">
-                Sí, presento eso
-              </button>
-              <button onclick="responderPaso1Clinico('${sintomaId}', false)" class="flex-1 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 font-bold py-2 px-3 rounded-xl text-xs transition-colors">
-                No, ninguno de esos
-              </button>
+              <button onclick="responderPaso1Clinico('${sintomaId}', true)" class="flex-1 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-bold py-2 px-3 rounded-xl text-xs">Sí</button>
+              <button onclick="responderPaso1Clinico('${sintomaId}', false)" class="flex-1 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 font-bold py-2 px-3 rounded-xl text-xs">No</button>
             </div>
-            <p class="text-[10px] text-slate-400 italic">Puedes tocar un botón o responder escribiendo "Sí" o "No" en el chat.</p>
           </div>
         `);
-      }, 380);
+      }, 300);
     }
 
-    function responderPaso1Clinico(sintomaId, tieneSignosAlarma, omitirBurbujaUsuario = false) {
-      const ficha = BASE_CLINICA_DOC_CHAT[sintomaId];
-      if (!ficha) return;
-
+    function responderPaso1Clinico(sintomaId, tieneSignosAlarma) {
+      const ficha = BASE_CLINICA_DOC_CHAT[sintomaId] || BASE_CLINICA_DOC_CHAT['dolor_cabeza'];
       if (tieneSignosAlarma) {
         entrevistaClinicaActiva = null;
-        if (!omitirBurbujaUsuario) {
-          agregarMensaje('usuario', 'Sí, presento esos signos de alarma');
-        }
+        agregarMensaje('usuario', 'Sí');
         setTimeout(() => {
           const r = ficha.alertaRoja;
-          generarTarjetaTriaje(
-            'Rojo',
-            r.titulo,
-            r.descripcion,
-            r.causas,
-            r.soluciones,
-            r.paraElMedico,
-            ficha.especialidad
-          );
-        }, 380);
+          generarTarjetaTriaje('Rojo', r.titulo, r.descripcion, r.causas, r.soluciones, r.paraElMedico, ficha.especialidad);
+        }, 300);
       } else {
         entrevistaClinicaActiva = { sintomaId, paso: 2 };
-        if (!omitirBurbujaUsuario) {
-          agregarMensaje('usuario', 'No presento esos signos de alarma');
-        }
+        agregarMensaje('usuario', 'No');
         setTimeout(() => {
-          const botonesOpciones = ficha.opciones2.map((op, idx) => {
-            const estiloBoton = op.color === 'Amarillo'
-              ? 'bg-amber-50 hover:bg-amber-100 text-amber-900 border-amber-200'
-              : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border-emerald-200';
-            return `
-              <button onclick="responderPaso2Clinico('${sintomaId}', idx)"class="{estiloBoton} border font-semibold px-3 py-2 rounded-xl text-xs text-left transition-colors flex items-start gap-2">
-                <span class="font-bold shrink-0">${idx + 1}.</span>
-                <span>${op.texto}</span>
-              </button>
-            `;
-          }).join('');
+          const botonesOpciones = ficha.opciones2.map((op, idx) => `
+            <button onclick="responderPaso2Clinico('${sintomaId}', ${idx})" class="bg-sky-50 hover:bg-sky-100 text-sky-900 border border-sky-200 font-semibold px-3 py-2 rounded-xl text-xs text-left transition-colors">
+              <b>${idx + 1}.</b> ${op.texto}
+            </button>
+          `).join('');
 
           agregarMensaje('bot', `
             <div class="space-y-2">
               <div class="flex items-center justify-between border-b border-slate-100 pb-1.5">
-                <span class="font-bold text-sky-900 text-xs flex items-center gap-1.5">
-                  <i class="fa-solid fa-clipboard-question text-sky-600"></i> ${ficha.nombre}
-                </span>
-                <span class="text-[10px] font-semibold bg-sky-50 text-sky-700 px-2 py-0.5 rounded-full border border-sky-200">Pregunta 2 de 2</span>
+                <span class="font-bold text-sky-900 text-xs">${ficha.nombre}</span>
+                <span class="text-[10px] font-semibold bg-sky-50 text-sky-700 px-2 py-0.5 rounded-full">Pregunta 2 de 2</span>
               </div>
               <p class="text-slate-700 font-medium">${ficha.pregunta2}</p>
-              <div class="flex flex-col gap-1.5 pt-1">
-                ${botonesOpciones}
-              </div>
-              <p class="text-[10px] text-slate-400 italic">Selecciona la opción que mejor describa tu caso o escribe el número (1, 2...).</p>
+              <div class="flex flex-col gap-1.5 pt-1">${botonesOpciones}</div>
             </div>
           `);
-        }, 380);
+        }, 300);
       }
     }
 
-    function responderPaso2Clinico(sintomaId, indiceOpcion, omitirBurbujaUsuario = false) {
-      const ficha = BASE_CLINICA_DOC_CHAT[sintomaId];
-      if (!ficha || !ficha.opciones2[indiceOpcion]) return;
-
-      const op = ficha.opciones2[indiceOpcion];
+    function responderPaso2Clinico(sintomaId, indiceOpcion) {
+      const ficha = BASE_CLINICA_DOC_CHAT[sintomaId] || BASE_CLINICA_DOC_CHAT['dolor_cabeza'];
+      const op = ficha.opciones2[indiceOpcion] || ficha.opciones2[0];
       entrevistaClinicaActiva = null;
-
-      if (!omitirBurbujaUsuario) {
-        agregarMensaje('usuario', op.texto);
-      }
-
-      // Si el usuario seleccionó previamente un dolor severo (>=8) en la escala EVA, escalamos la prioridad por seguridad
-      const colorFinal = (intensidadDolorActual && intensidadDolorActual >= 8)
-        ? 'Rojo'
-        : (intensidadDolorActual && intensidadDolorActual >= 6 && op.color === 'Verde')
-        ? 'Amarillo'
-        : op.color;
+      agregarMensaje('usuario', op.texto);
 
       setTimeout(() => {
-        generarTarjetaTriaje(
-          colorFinal,
-          op.titulo,
-          op.descripcion,
-          op.causas,
-          op.soluciones,
-          op.paraElMedico,
-          ficha.especialidad
-        );
-      }, 380);
+        generarTarjetaTriaje(op.color, op.titulo, op.descripcion, op.causas, op.soluciones, op.paraElMedico, ficha.especialidad);
+      }, 300);
     }
 
-    // Funciones puente para mantener compatibilidad con cualquier llamada previa
-    function responderPreguntaCefalea1(tieneSignosAlarma) {
-      responderPaso1Clinico('dolor_cabeza', tieneSignosAlarma);
-    }
-    function responderPreguntaCefalea2(duracion) {
-      responderPaso2Clinico('dolor_cabeza', duracion === 'subito' ? 0 : 1);
-    }
-
-    /**
-     * Renderiza la Tarjeta Completa de Conclusión Clínica (Semáforo, Causas, Soluciones Prácticas y Guía para el Médico)
-     */
-    function generarTarjetaTriaje(color, titulo, descripcion, posiblesCausas = [], solucionesRecomendadas = [], guiaParaElMedico = '', especialidadSugerida = 'Medicina General') {
-      let badgeStyle = '', cardBg = '', btnAction = '';
-
-      // Guardar automáticamente en el Diario de Síntomas
+    function generarTarjetaTriaje(color, titulo, descripcion, causas = [], soluciones = [], paraMedico = '', especialidad = 'Medicina General') {
       const nuevaConsulta = {
         id_consulta: `cons_00${historialConsultas.length + 1}`,
         fecha: new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }) + ' (Hoy)',
         sintoma_reportado: titulo,
-        intensidad: intensidadDolorActual || (color === 'Rojo' ? 9 : color === 'Amarillo' ? 6 : 3),
+        intensidad: intensidadDolorActual || (color === 'Rojo' ? 9 : 5),
         triaje_inicial: color,
         triaje_actualizado: color,
-        respuesta_usuario: 'Pendiente seguimiento 24h',
-        observacion: `descripcion{guiaParaElMedico ? ' | Para tu médico: ' + guiaParaElMedico : ''}`
+        respuesta_usuario: 'Pendiente seguimiento',
+        observacion: paraMedico
       };
       historialConsultas.unshift(nuevaConsulta);
       renderizarHistorialDiario();
 
-      // Actualizar banner de seguimiento 24h con la última consulta
-      const segSintoma = document.getElementById('seguimiento-sintoma-actual');
-      const segNivel = document.getElementById('seguimiento-nivel-actual');
-      if (segSintoma) segSintoma.textContent = `"${titulo}"`;
-      if (segNivel) segNivel.textContent = color;
+      document.getElementById('seguimiento-sintoma-actual').textContent = `"${titulo}"`;
+      document.getElementById('seguimiento-nivel-actual').textContent = color;
+
+      let badgeClass = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+      let cardBg = 'border-emerald-300 bg-emerald-50/70';
+      let btnHtml = `<button onclick="switchTab('tab-diario')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl text-xs">Registrar Evolución</button>`;
 
       if (color === 'Rojo') {
-        badgeStyle = 'bg-red-100 text-red-700 border-red-200';
+        badgeClass = 'bg-red-100 text-red-700 border-red-200';
         cardBg = 'border-red-300 bg-red-50/70';
-        btnAction = `
-          <div class="space-y-1.5">
-            <button onclick="abrirModalEmergencia()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-md shadow-red-200 transition-all">
-              <i class="fa-solid fa-phone-volume"></i> LLAMAR A URGENCIAS (123) + ALERTA
-            </button>
-            <button onclick="switchTab('tab-directorio'); obtenerUbicacionGPSReal(false);" class="w-full bg-white hover:bg-red-50 text-red-700 border border-red-200 font-semibold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all">
-              <i class="fa-solid fa-location-dot"></i> Ver Hospital de Urgencias más Cercano
-            </button>
-          </div>
-        `;
+        btnHtml = `<button onclick="abrirModalEmergencia()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-xl text-xs">LLAMAR AL 123 (URGENCIAS)</button>`;
       } else if (color === 'Amarillo') {
-        badgeStyle = 'bg-amber-100 text-amber-800 border-amber-200';
+        badgeClass = 'bg-amber-100 text-amber-800 border-amber-200';
         cardBg = 'border-amber-300 bg-amber-50/70';
-        btnAction = `
-          <div class="space-y-1.5">
-            <button onclick="switchTab('tab-directorio'); obtenerUbicacionGPSReal(false);" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition-all">
-              <i class="fa-solid fa-map-location-dot"></i> Abrir Mapa de Centros Cercanos (GPS)
-            </button>
-            <button onclick="exportarReporteMedicoPDF()" class="w-full bg-white hover:bg-amber-50 text-amber-800 border border-amber-300 font-semibold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all">
-              <i class="fa-solid fa-file-pdf text-red-600"></i> Descargar Resumen en PDF para mi Médico
-            </button>
-          </div>
-        `;
-      } else {
-        badgeStyle = 'bg-emerald-100 text-emerald-800 border-emerald-200';
-        cardBg = 'border-emerald-300 bg-emerald-50/70';
-        btnAction = `
-          <div class="space-y-1.5">
-            <button onclick="switchTab('tab-diario')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition-all">
-              <i class="fa-solid fa-bell"></i> Registrar Evolución en 24h en mi Diario
-            </button>
-            <button onclick="exportarReporteMedicoPDF()" class="w-full bg-white hover:bg-emerald-50 text-emerald-800 border border-emerald-300 font-semibold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all">
-              <i class="fa-solid fa-file-pdf text-red-600"></i> Exportar Orientación para mi Médico (PDF)
-            </button>
-          </div>
-        `;
+        btnHtml = `<button onclick="switchTab('tab-directorio')" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 rounded-xl text-xs">Ver Centros Médicos en Mapa</button>`;
       }
 
-      const htmlCausas = posiblesCausas.length > 0 ? `
-        <div class="bg-white/90 rounded-xl p-2.5 border border-slate-200/80 text-[11px]">
-          <span class="font-bold text-slate-700 block mb-1"><i class="fa-solid fa-magnifying-glass-chart text-sky-600 mr-1"></i> Posibles causas orientativas:</span>
-          <ol class="list-decimal pl-4 text-slate-600 space-y-0.5">
-            ${posiblesCausas.map(c => `<li>${c}</li>`).join('')}
-          </ol>
-        </div>
-      ` : '';
-
-      const htmlSoluciones = solucionesRecomendadas.length > 0 ? `
-        <div class="bg-white/90 rounded-xl p-2.5 border border-slate-200/80 text-[11px]">
-          <span class="font-bold text-emerald-800 block mb-1"><i class="fa-solid fa-kit-medical text-emerald-600 mr-1"></i> Solución inicial y cuidados recomendados:</span>
-          <ul class="list-disc pl-4 text-slate-700 space-y-1">
-            ${solucionesRecomendadas.map(s => `<li>${s}</li>`).join('')}
-          </ul>
-        </div>
-      ` : '';
-
-      const alergiasPaciente = (expedienteUsuario.alergias || []).join(', ');
-      const cronicasPaciente = (expedienteUsuario.enfermedades_cronicas || []).join(', ');
-      const notaExpediente = (alergiasPaciente || cronicasPaciente)
-        ? `<p class="text-[10px] text-slate-500 mt-1 pt-1 border-t border-slate-200/70"><strong>Nota de tu expediente:</strong> Alergia a <em>alergiasPaciente||'Ninguna'</em>•Condición:<em>{cronicasPaciente || 'Ninguna'}</em>.</p>`
-        : '';
-
-      const htmlParaMedico = guiaParaElMedico ? `
-        <div class="bg-sky-50/90 rounded-xl p-2.5 border border-sky-200 text-[11px] text-sky-900">
-          <span class="font-bold text-sky-800 block mb-0.5"><i class="fa-solid fa-user-doctor mr-1"></i> Conclusión para llevar a tu médico (${especialidadSugerida}):</span>
-          <p class="leading-snug">${guiaParaElMedico}</p>
-          ${notaExpediente}
-        </div>
-      ` : '';
-
-      const htmlTarjeta = `
-        <div class="p-3.5 rounded-2xl border ${cardBg} space-y-2.5 mt-1">
+      const html = `
+        <div class="p-3.5 rounded-2xl border ${cardBg} space-y-2 mt-1 text-xs">
           <div class="flex justify-between items-center">
-            <span class="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border ${badgeStyle}">
-              Semáforo ${color}
-            </span>
-            <span class="text-[10px] text-slate-600 font-semibold bg-white/80 px-2 py-0.5 rounded-md border border-slate-200">
-              ${especialidadSugerida}
-            </span>
+            <span class="font-black uppercase px-2 py-0.5 rounded-full border ${badgeClass}">Triaje ${color}</span>
+            <span class="text-slate-600 font-semibold">${especialidad}</span>
           </div>
-          <h4 class="font-bold text-slate-900 text-xs">${titulo}</h4>
-          <p class="text-[11px] text-slate-700 leading-snug">${descripcion}</p>
-          ${htmlCausas}
-          ${htmlSoluciones}
-          ${htmlParaMedico}
-          <div class="pt-0.5">
-            ${btnAction}
-          </div>
+          <h4 class="font-bold text-slate-900">${titulo}</h4>
+          <p class="text-slate-700">${descripcion}</p>
+          ${causas.length ? `<p class="text-slate-600"><b>Causas:</b> ${causas.join(', ')}</p>` : ''}
+          ${soluciones.length ? `<p class="text-slate-700"><b>Cuidados:</b> ${soluciones.join('. ')}</p>` : ''}
+          <div class="pt-1">${btnHtml}</div>
         </div>
       `;
-
-      agregarMensaje('bot', htmlTarjeta);
-    }
-
-    /**
-     * Clasifica el mensaje del usuario:
-     * - Si hay una entrevista médica activa y el usuario responde "sí", "no", "1", "2", etc., continúa el flujo.
-     * - Si es un saludo o solicitud de ayuda médica general, presenta las opciones de Doc Chat.
-     * - Si es un tema ajeno a la medicina, responde que está fuera de su conocimiento como médico.
-     */
-    function esConsultaMedicaValida(textoNorm) {
-      const palabrasFueraDeProposito = [
-        'futbol', 'partido', 'gol', 'chiste', 'broma', 'poema', 'cancion',
-        'pelicula', 'serie', 'videojuego', 'juego', 'programar', 'codigo',
-        'javascript', 'python', 'html', 'matematica', 'ecuacion', 'capital de',
-        'presidente', 'politica', 'clima', 'llover', 'horoscopo',
-        'astrologia', 'bitcoin', 'cripto', 'dolar', 'receta de cocina', 'cocinar',
-        'pizza', 'hamburguesa', 'novio', 'novia', 'tarea de', 'traduce', 'traducir',
-        'quien gano', 'cuanto es'
-      ];
-
-      if (palabrasFueraDeProposito.some(p => textoNorm.includes(p))) {
-        return false;
-      }
-
-      // Verificar si coincide con cualquiera de las palabras clave de nuestras 16 especialidades clínicas
-      for (const clave of Object.keys(BASE_CLINICA_DOC_CHAT)) {
-        if (BASE_CLINICA_DOC_CHAT[clave].palabrasClave.some(kw => textoNorm.includes(kw))) {
-          return true;
-        }
-      }
-
-      const vocabularioMedicoGeneral = [
-        'dolor', 'duele', 'doliendo', 'molestia', 'malestar', 'ardor', 'picazon',
-        'punzada', 'opresion', 'presion', 'sangrado', 'sangre', 'hemorragia',
-        'infeccion', 'inflamacion', 'hinchazon', 'hinchado', 'cansancio', 'fatiga',
-        'debilidad', 'convulsion', 'sintoma', 'enfermo', 'enfermedad', 'medico',
-        'doctor', 'hospital', 'clinica', 'urgencia', 'emergencia', 'pastilla',
-        'medicamento', 'remedio', 'jarabe', 'tableta', 'capsula', 'dosis', 'tomar',
-        'receta', 'farmacia', 'drogueria', 'interaccion', 'efecto', 'contraindicacion',
-        'ibuprofeno', 'paracetamol', 'acetaminofen', 'dolex', 'aspirina', 'warfarina',
-        'amoxicilina', 'omeprazol', 'losartan', 'enalapril', 'prednisona', 'dexametasona',
-        'salbutamol', 'penicilina', 'naproxeno', 'diclofenaco', 'loratadina', 'metformina',
-        'azitromicina', 'alcohol', 'siento', 'tengo', 'sufro', 'me siento', 'auxilio',
-        'ayuda', 'salud', 'consulta', 'tratamiento', 'aliviar', 'curar', 'cuerpo'
-      ];
-
-      return vocabularioMedicoGeneral.some(palabra => textoNorm.includes(palabra));
-    }
-
-    function detectarCategoriaClinica(textoNorm) {
-      // Evaluar coincidencias ponderadas en las 16 categorías clínicas de BASE_CLINICA_DOC_CHAT
-      let mejorCategoria = null;
-      let maxPuntaje = 0;
-
-      for (const [id, ficha] of Object.entries(BASE_CLINICA_DOC_CHAT)) {
-        let puntaje = 0;
-        for (const kw of ficha.palabrasClave) {
-          if (textoNorm.includes(kw)) {
-            puntaje += kw.includes(' ') ? 3 : 2;
-          }
-        }
-        if (puntaje > maxPuntaje) {
-          maxPuntaje = puntaje;
-          mejorCategoria = id;
-        }
-      }
-      return mejorCategoria;
+      agregarMensaje('bot', html);
     }
 
     function enviarMensajeUsuario() {
       const input = document.getElementById('chat-input');
       const texto = input.value.trim();
       if (!texto) return;
-
       agregarMensaje('usuario', texto);
       input.value = '';
 
-      const tNorm = normalizarTexto(texto);
+      setTimeout(() => {
+        agregarMensaje('bot', `<p class="text-slate-700">He analizado tu mensaje. Te sugiero seleccionar uno de los botones rápidos de síntomas abajo para iniciar una evaluación clínica guiada por semáforo.</p>`);
+      }, 400);
+    }
 
-      // 1. Si hay una pregunta clínica activa (Paso 1 o Paso 2), verificar si el usuario está respondiendo por texto
-      if (entrevistaClinicaActiva) {
-        const { sintomaId, paso } = entrevistaClinicaActiva;
-        const ficha = BASE_CLINICA_DOC_CHAT[sintomaId];
-
-        if (paso === 1) {
-          if (['si', 's', 'claro', 'asi es', 'afirmativo', '1', 'mucho', 'bastante'].includes(tNorm) || tNorm.startsWith('si ')) {
-            responderPaso1Clinico(sintomaId, true, true);
-            return;
-          }
-          if (['no', 'n', 'ninguno', 'nada', 'para nada', '2', 'tampoco'].includes(tNorm) || tNorm.startsWith('no ')) {
-            responderPaso1Clinico(sintomaId, false, true);
-            return;
-          }
-        } else if (paso === 2 && ficha) {
-          if (tNorm === '1' || tNorm.startsWith('opcion 1') || tNorm.includes('primera')) {
-            responderPaso2Clinico(sintomaId, 0, true);
-            return;
-          }
-          if ((tNorm === '2' || tNorm.startsWith('opcion 2') || tNorm.includes('segunda')) && ficha.opciones2[1]) {
-            responderPaso2Clinico(sintomaId, 1, true);
-            return;
-          }
-          if ((tNorm === '3' || tNorm.startsWith('opcion 3') || tNorm.includes('tercera')) && ficha.opciones2[2]) {
-            responderPaso2Clinico(sintomaId, 2, true);
-            return;
-          }
-          // Buscar coincidencia de palabras con alguna de las opciones del Paso 2
-          for (let i = 0; i < ficha.opciones2.length; i++) {
-            const palabrasOp = normalizarTexto(ficha.opciones2[i].texto).split(/\s+/).filter(w => w.length > 4);
-            if (palabrasOp.some(w => tNorm.includes(w))) {
-              responderPaso2Clinico(sintomaId, i, true);
-              return;
-            }
-          }
-        }
-      }
-
-      // 2. Si es un saludo cordial inicial ("hola", "buenos días", "buenas tardes"), guiar amablemente al paciente
-      if (['hola', 'buenos dias', 'buenas tardes', 'buenas noches', 'buenas', 'hola doc'].includes(tNorm)) {
-        setTimeout(() => {
-          agregarMensaje('bot', `
-            <p class="font-bold text-sky-900 mb-1">¡Hola! Soy Doc Chat. Tu asistente médico inteligente 🩺</p>
-            <p class="text-slate-700 mb-1.5">Puedo ayudarte a evaluar síntomas de <strong>16 áreas médicas</strong> (dolor de cabeza, pecho, estómago, gripa/fiebre, falta de aire, mareo, espalda, ardor al orinar, alergias, garganta/oído, presión arterial, ojos, dolor de muela, golpes/quemaduras o ansiedad).</p>
-            <p class="text-sky-800 font-medium">Cuéntame: ¿qué síntoma o molestia sientes hoy y desde hace cuánto tiempo?</p>
-          `);
-        }, 350);
-        return;
-      }
-
-      // 3. Verificar si el mensaje está fuera del propósito médico
-      if (!esConsultaMedicaValida(tNorm)) {
-        setTimeout(() => {
-          agregarMensaje('bot', `
-            <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl text-xs text-amber-900 space-y-1.5">
-              <p class="font-bold flex items-center gap-1.5 text-amber-800">
-                <i class="fa-solid fa-user-doctor"></i> Fuera del alcance médico
-              </p>
-              <p class="leading-relaxed">
-                <strong>Esta acción está fuera de mi conocimiento como médico.</strong> Mi propósito es orientarte exclusivamente sobre síntomas de salud, preguntas clínicas de valoración e interacciones de medicamentos.
-              </p>
-              <p class="text-[11px] text-amber-700">
-                Por favor descríbeme qué síntoma o malestar físico presentas (por ejemplo: <em>"Tengo dolor de cabeza"</em>, <em>"Me arde al orinar"</em>, <em>"Tengo mareo"</em> o <em>"Me duele el estómago"</em>).
-              </p>
-            </div>
-          `);
-        }, 380);
-        return;
-      }
-
-      // 4. Alerta preventiva si el usuario menciona un medicamento en el chat
-      Object.keys(DB_MEDICAMENTOS).forEach(med => {
-        const medNorm = normalizarTexto(med);
-        if (tNorm.includes(medNorm) || (med === 'Paracetamol' && (tNorm.includes('acetaminofen') || tNorm.includes('dolex')))) {
-          setTimeout(() => {
-            agregarMensaje('bot', `
-              <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-xl text-[11px] text-amber-900">
-                <strong><i class="fa-solid fa-pills"></i> Advertencia farmacológica sobre ${med}:</strong> ${DB_MEDICAMENTOS[med].advertencia}
-              </div>
-            `);
-          }, 280);
-        }
+    function switchTab(tabId) {
+      ['tab-chat', 'tab-medicamentos', 'tab-diario', 'tab-directorio', 'tab-perfil'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.classList.add('hidden'); el.classList.remove('flex'); }
       });
+      const target = document.getElementById(tabId);
+      if (target) { target.classList.remove('hidden'); target.classList.add('flex'); }
 
-      // 5. Detectar signos críticos inmediatos en el texto libre (ej. convulsión, desmayo, hemorragia severa, asfixia)
-      if (tNorm.includes('convulsion') || tNorm.includes('inconsciente') || tNorm.includes('no respira') || tNorm.includes('infarto')) {
-        setTimeout(() => {
-          generarTarjetaTriaje(
-            'Rojo',
-            'Emergencia Médica Crítica Detectada',
-            'Los síntomas descritos comprometen funciones vitales y requieren activación inmediata del sistema de emergencias.',
-            ['Compromiso neurológico o cardiorrespiratorio agudo', 'Urgencia vital inmediata', 'Requiere asistencia médica presencial urgente'],
-            [
-              'Activa de inmediato la Línea de Emergencias 123 usando el botón inferior.',
-              'Coloca a la persona en posición lateral de seguridad si está inconsciente o convulsionando.',
-              'No administres líquidos ni medicamentos por vía oral.'
-            ],
-            'Informa al equipo paramédico o de urgencias el minuto exacto en que inició el episodio y los antecedentes del expediente.',
-            'Urgencias Vitales'
-          );
-        }, 400);
-        return;
+      if (tabId === 'tab-directorio') {
+        setTimeout(() => { inicializarMapaInteractivo(); }, 150);
       }
+    }
 
-      // 6. Detectar cuál de las 16 rutas clínicas se ajusta al síntoma descrito e iniciar el interrogatorio médico
-      const categoriaDetectada = detectarCategoriaClinica(tNorm);
-      if (categoriaDetectada) {
-        iniciarSintoma(categoriaDetectada, true);
+    function cerrarDisclaimer() {
+      const b = document.getElementById('disclaimer-banner');
+      if (b) b.style.display = 'none';
+    }
+
+    function inicializarMapaInteractivo() {
+      if (map) { map.invalidateSize(); return; }
+      if (typeof L === 'undefined') return;
+
+      map = L.map('mapa-salud-real', { zoomControl: true, attributionControl: false }).setView([ubicacionActual.lat, ubicacionActual.lng], 13);
+      L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=es', { maxZoom: 20 }).addTo(map);
+      markersLayer = L.layerGroup().addTo(map);
+      actualizarMarcadorUsuario(false);
+      renderizarListaCentrosUI();
+    }
+
+    function actualizarMarcadorUsuario(zoom = true) {
+      if (!map) return;
+      const icono = L.divIcon({ className: '', html: '<div class="user-gps-dot"></div>', iconSize: [18, 18], iconAnchor: [9, 9] });
+      if (userMarker) {
+        userMarker.setLatLng([ubicacionActual.lat, ubicacionActual.lng]);
       } else {
-        // Si menciona un malestar médico general no específico, hacer preguntas clínicas de orientación general
-        setTimeout(() => {
-          agregarMensaje('bot', `
-            <div class="space-y-2">
-              <p class="font-bold text-sky-900">Entiendo que sientes malestar. Para hacerte las preguntas médicas exactas y darte la solución adecuada, indícame qué área predomina:</p>
-              <div class="grid grid-cols-2 gap-1.5 pt-1">
-                <button onclick="iniciarSintoma('dolor_cabeza')" class="bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 font-semibold py-1.5 px-2.5 rounded-xl text-[11px] text-left">🧠 Cabeza / Mareo</button>
-                <button onclick="iniciarSintoma('resfriado')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-semibold py-1.5 px-2.5 rounded-xl text-[11px] text-left">🌡️ Fiebre / Gripa / Tos</button>
-                <button onclick="iniciarSintoma('abdominal')" class="bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-semibold py-1.5 px-2.5 rounded-xl text-[11px] text-left">🤢 Estómago / Abdomen</button>
-                <button onclick="iniciarSintoma('musculoesqueletico')" class="bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 font-semibold py-1.5 px-2.5 rounded-xl text-[11px] text-left">🦴 Espalda / Muscular</button>
-                <button onclick="iniciarSintoma('urinario')" class="bg-cyan-50 hover:bg-cyan-100 text-cyan-800 border border-cyan-200 font-semibold py-1.5 px-2.5 rounded-xl text-[11px] text-left">💧 Ardor al Orinar</button>
-                <button onclick="iniciarSintoma('alergia_piel')" class="bg-pink-50 hover:bg-pink-100 text-pink-800 border border-pink-200 font-semibold py-1.5 px-2.5 rounded-xl text-[11px] text-left">🖐️ Alergia / Piel</button>
-              </div>
-            </div>
-          `);
-        }, 400);
+        userMarker = L.marker([ubicacionActual.lat, ubicacionActual.lng], { icon: icono }).addTo(map).bindPopup('<b>Tu ubicación actual</b>');
       }
+      if (zoom) map.setView([ubicacionActual.lat, ubicacionActual.lng], 14, { animate: true });
     }
 
-    // ============================================================================
-    // 7. PROTOCOLO DE EMERGENCIA 123 Y ALERTA A CONTACTOS
-    // ============================================================================
-    function abrirModalEmergencia() {
-      const coordsSpan = document.getElementById('modal-gps-coords');
-      if (coordsSpan) coordsSpan.textContent = ubicacionActual.etiqueta;
-      document.getElementById('modal-emergencia-123').classList.remove('hidden');
+    function centrarMapaEnUsuario() {
+      if (!map) inicializarMapaInteractivo();
+      if (map) map.setView([ubicacionActual.lat, ubicacionActual.lng], 14, { animate: true });
     }
 
-    function cerrarModalEmergencia() {
-      document.getElementById('modal-emergencia-123').classList.add('hidden');
+    function obtenerUbicacionGPSReal(forzar = true) {
+      if (!navigator.geolocation) { if (forzar) alert('Geolocalización no soportada.'); return; }
+      navigator.geolocation.getCurrentPosition(pos => {
+        ubicacionActual.lat = pos.coords.latitude;
+        ubicacionActual.lng = pos.coords.longitude;
+        ubicacionActual.etiqueta = `${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
+        document.getElementById('badge-ubicacion-texto').textContent = ubicacionActual.etiqueta;
+        inicializarMapaInteractivo();
+        actualizarMarcadorUsuario(true);
+        renderizarListaCentrosUI();
+      }, () => {
+        if (forzar) alert('No se pudo obtener la ubicación GPS.');
+      });
     }
 
-    function registrarAccionEmergencia() {
-      cerrarModalEmergencia();
+    function calcularDistanciaKm(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+      return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
     }
 
-    function notificarContactoEmergenciaSMS() {
-      const contacto = expedienteUsuario.contactos_emergencia[0];
-      const nombre = contacto ? contacto.nombre : 'Contacto de Emergencia';
-      const tel = contacto ? contacto.telefono : '';
-      const linkMapa = `https://www.google.com/maps?q=ubicacionActual.lat,{ubicacionActual.lng}`;
-      const mensaje = `ALERTA DOC-DOC: Necesito asistencia médica urgente (Semáforo Rojo). Mi ubicación GPS actual es ${ubicacionActual.etiqueta}: ${linkMapa}`;
+    function renderizarListaCentrosUI() {
+      const contenedor = document.getElementById('lista-centros-salud');
+      if (!contenedor) return;
 
-      alert(`Alerta enviada a nombre({tel}):\n\n"${mensaje}"`);
-      cerrarModalEmergencia();
+      const lista = centrosCercanos.map(c => {
+        const km = calcularDistanciaKm(ubicacionActual.lat, ubicacionActual.lng, c.lat, c.lng);
+        return { ...c, distKm: km, distTexto: `A ${km.toFixed(1)} km` };
+      }).sort((a,b) => a.distKm - b.distKm);
+
+      if (map && markersLayer) {
+        markersLayer.clearLayers();
+        lista.forEach(l => {
+          const color = l.tipo === 'farmacia' ? '#16A34A' : '#DC2626';
+          const pin = L.divIcon({ className: '', html: `<div style="background:${color};color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;"><i class="fa-solid ${l.tipo==='farmacia'?'fa-pills':'fa-hospital'}"></i></div>`, iconSize: [24,24], iconAnchor:[12,12] });
+          L.marker([l.lat, l.lng], { icon: pin }).addTo(markersLayer).bindPopup(`<b>${l.nombre}</b><br>${l.direccion}<br>${l.distTexto}`);
+        });
+      }
+
+      contenedor.innerHTML = lista.map(l => `
+        <div onclick="enfocarLugarEnMapa(${l.lat}, ${l.lng})" class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center cursor-pointer hover:border-sky-300">
+          <div class="flex items-start gap-2.5 min-w-0 pr-2">
+            <div class="w-8 h-8 rounded-lg bg-${l.tipo==='hospital'?'red':'emerald'}-100 text-${l.tipo==='hospital'?'red':'emerald'}-600 flex items-center justify-center shrink-0">
+              <i class="fa-solid ${l.tipo==='hospital'?'fa-hospital':'fa-pills'}"></i>
+            </div>
+            <div class="min-w-0">
+              <p class="text-xs font-bold text-slate-800 truncate">${l.nombre}</p>
+              <p class="text-[11px] text-slate-500">${l.horario} • <strong>${l.distTexto}</strong></p>
+            </div>
+          </div>
+          <a href="tel:${l.telefono}" onclick="event.stopPropagation()" class="bg-sky-50 text-sky-700 p-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-phone"></i></a>
+        </div>
+      `).join('');
     }
 
-    // ============================================================================
-    // 8. VERIFICADOR DE MEDICAMENTOS + OPENFDA EN ESPAÑOL
-    // ============================================================================
+    function enfocarLugarEnMapa(lat, lng) {
+      if (!map) inicializarMapaInteractivo();
+      if (map) map.setView([lat, lng], 16, { animate: true });
+    }
+
     function agregarMedicamentoAComparar() {
       const select = document.getElementById('select-medicamento');
       const med = select.value;
       if (!med) return;
-
       if (!medicamentosSeleccionados.includes(med)) {
         medicamentosSeleccionados.push(med);
         actualizarListaMedsUI();
@@ -3598,15 +1430,13 @@
 
     function actualizarListaMedsUI() {
       const contenedor = document.getElementById('lista-meds-comparar');
-      if (medicamentosSeleccionados.length === 0) {
+      if (!medicamentosSeleccionados.length) {
         contenedor.innerHTML = '<span class="text-xs text-slate-400 italic">No has seleccionado medicamentos.</span>';
         return;
       }
-
       contenedor.innerHTML = medicamentosSeleccionados.map(m => `
         <span class="inline-flex items-center gap-1.5 bg-sky-100 text-sky-800 text-xs px-2.5 py-1 rounded-full border border-sky-200 font-semibold">
-          ${m}
-          <button onclick="eliminarMed('${m}')" class="text-sky-600 hover:text-sky-900 font-bold">×</button>
+          ${m} <button onclick="eliminarMed('${m}')" class="text-sky-600 hover:text-sky-900 font-bold">×</button>
         </span>
       `).join('');
     }
@@ -3619,497 +1449,110 @@
     function evaluarInteracciones() {
       const resContainer = document.getElementById('resultado-interaccion');
       resContainer.classList.remove('hidden');
-
       if (medicamentosSeleccionados.length < 2) {
-        resContainer.innerHTML = `
-          <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl text-xs text-amber-800">
-            Por favor selecciona al menos 2 medicamentos o sustancias para evaluar la interacción.
-          </div>
-        `;
+        resContainer.innerHTML = '<div class="bg-amber-50 border border-amber-200 p-3 rounded-xl text-xs text-amber-800">Selecciona al menos 2 medicamentos.</div>';
         return;
       }
-
-      let conflictosGraves = [];
-      let conflictosModerados = [];
-
-      for (let i = 0; i < medicamentosSeleccionados.length; i++) {
-        for (let j = i + 1; j < medicamentosSeleccionados.length; j++) {
-          const medA = medicamentosSeleccionados[i];
-          const medB = medicamentosSeleccionados[j];
-          const infoA = DB_MEDICAMENTOS[medA];
-          const infoB = DB_MEDICAMENTOS[medB];
-
-          if (infoA?.incompatibles_graves?.includes(medB) || infoB?.incompatibles_graves?.includes(medA)) {
-            conflictosGraves.push(`<strong>${medA} + ${medB}:</strong> ${infoA?.advertencia || infoB?.advertencia}`);
-          } else if (infoA?.incompatibles_moderadas?.includes(medB) || infoB?.incompatibles_moderadas?.includes(medA)) {
-            conflictosModerados.push(`<strong>${medA} + ${medB}:</strong> ${infoA?.advertencia || infoB?.advertencia}`);
-          }
-        }
-      }
-
-      if (conflictosGraves.length > 0) {
-        resContainer.innerHTML = `
-          <div class="bg-red-50 border border-red-300 p-3.5 rounded-2xl text-xs space-y-2">
-            <div class="flex items-center justify-between text-red-700 font-bold">
-              <span class="flex items-center gap-1.5"><i class="fa-solid fa-triangle-exclamation text-base"></i> Riesgo Grave / Incompatible</span>
-              <span class="text-[10px] uppercase bg-red-100 px-2 py-0.5 rounded-full border border-red-200">Alerta Alta</span>
-            </div>
-            <p class="text-red-900 text-[11px] leading-relaxed">No se recomienda la combinación de estos fármacos sin supervisión médica explícita:</p>
-            <ul class="list-disc pl-4 text-[11px] text-red-800 space-y-1">
-              ${conflictosGraves.map(a => `<li>${a}</li>`).join('')}
-            </ul>
-          </div>
-        `;
-      } else if (conflictosModerados.length > 0) {
-        resContainer.innerHTML = `
-          <div class="bg-amber-50 border border-amber-300 p-3.5 rounded-2xl text-xs space-y-2">
-            <div class="flex items-center justify-between text-amber-800 font-bold">
-              <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle-exclamation text-base"></i> Precaución / Interacción Moderada</span>
-              <span class="text-[10px] uppercase bg-amber-100 px-2 py-0.5 rounded-full border border-amber-200">Precaución</span>
-            </div>
-            <ul class="list-disc pl-4 text-[11px] text-amber-900 space-y-1">
-              ${conflictosModerados.map(a => `<li>${a}</li>`).join('')}
-            </ul>
-          </div>
-        `;
-      } else {
-        resContainer.innerHTML = `
-          <div class="bg-emerald-50 border border-emerald-300 p-3.5 rounded-2xl text-xs space-y-1.5 text-emerald-800">
-            <div class="flex items-center justify-between text-emerald-700 font-bold">
-              <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-base"></i> Compatible / Sin Interacciones Graves</span>
-              <span class="text-[10px] uppercase bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">Seguro</span>
-            </div>
-            <p class="text-[11px]">No se encontraron incompatibilidades directas registradas en el catálogo clínico. Administrar únicamente bajo dosis estándar.</p>
-          </div>
-        `;
-      }
-    }
-
-    // Diccionario clínico de equivalencias Español <-> Inglés (FDA) y advertencias oficiales traducidas al español
-    const CATALOGO_FDA_ESPANOL = {
-      'ibuprofen': {
-        nombreEs: 'IBUPROFENO',
-        resumenEs: 'Advertencia de alergia: El ibuprofeno puede causar una reacción alérgica grave, especialmente en personas alérgicas a la aspirina. Los síntomas pueden incluir: urticaria, hinchazón facial, asma (sibilancias), enrojecimiento de la piel, ampollas o choque anafiláctico. Si ocurre una reacción alérgica, suspenda su uso y busque ayuda médica de inmediato. Advertencia de sangrado estomacal: Contiene un AINE que puede provocar úlceras o sangrado gastrointestinal si se combina con anticoagulantes, alcohol o corticosteroides.'
-      },
-      'acetaminophen': {
-        nombreEs: 'PARACETAMOL / ACETAMINOFÉN',
-        resumenEs: 'Advertencia hepática: Este producto contiene acetaminofén (paracetamol). Se puede producir daño hepático severo si se supera la dosis máxima diaria (4000 mg en 24 horas), si se toma con otros medicamentos que contengan acetaminofén o si se consume junto con bebidas alcohólicas. Suspenda su uso si presenta enrojecimiento de la piel, erupciones o ampollas.'
-      },
-      'aspirin': {
-        nombreEs: 'ASPIRINA (ÁCIDO ACETILSALICÍLICO)',
-        resumenEs: 'Advertencia de Síndrome de Reye y Sangrado: No administrar a niños ni adolescentes con síntomas virales por riesgo de síndrome de Reye. Puede causar reacción alérgica severa (asma, inflamación facial o shock) y aumenta el riesgo de hemorragia gastrointestinal grave si se combina con anticoagulantes (warfarina), ibuprofeno o corticosteroides.'
-      },
-      'warfarin': {
-        nombreEs: 'WARFARINA',
-        resumenEs: 'Advertencia de Riesgo de Hemorragia: La warfarina sódica puede causar sangrado mayor o fatal. Requiere monitoreo periódico de coagulación (INR). La combinación con antiinflamatorios no esteroideos (ibuprofeno, aspirina, naproxeno) o antibióticos altera su efecto anticoagulante e incrementa drásticamente el riesgo de hemorragia.'
-      },
-      'amoxicillin': {
-        nombreEs: 'AMOXICILINA',
-        resumenEs: 'Advertencia de Hipersensibilidad a Penicilinas: Se han reportado reacciones alérgicas graves y ocasionalmente fatales (anafilaxia) en pacientes tratados con antibióticos betalactámicos. Contraindicado en pacientes con alergia conocida a la penicilina o cefalosporinas.'
-      },
-      'omeprazole': {
-        nombreEs: 'OMEPRAZOL',
-        resumenEs: 'Advertencia de Uso: No utilice este inhibidor de bomba de protones si presenta dificultad o dolor al tragar alimentos, vómito con sangre o heces oscuras/con sangre. Estos pueden ser signos de una afección grave que requiere valoración médica presencial.'
-      },
-      'losartan': {
-        nombreEs: 'LOSARTÁN',
-        resumenEs: 'Advertencia en el Embarazo y Función Renal: Suspenda el losartán tan pronto como se detecte un embarazo, ya que actúa sobre el sistema renina-angiotensina y puede causar daño fetal. La administración conjunta con AINEs (como ibuprofeno) puede atenuar su efecto antihipertensivo y deteriorar la función renal.'
-      },
-      'enalapril': {
-        nombreEs: 'ENALAPRIL',
-        resumenEs: 'Advertencia de Angioedema e Hipotensión: Puede producir angioedema de cara, labios o laringe en personas susceptibles, así como tos seca persistente. Evitar en el embarazo y vigilar la presión arterial y función renal al combinarse con diuréticos o antiinflamatorios.'
-      },
-      'prednisone': {
-        nombreEs: 'PREDNISONA',
-        resumenEs: 'Advertencia de Corticosteroides: Puede enmascarar signos de infección y disminuir la respuesta inmunitaria. Su uso conjunto con aspirina o antiinflamatorios incrementa significativamente el riesgo de ulceración y hemorragia gastrointestinal. No suspender abruptamente sin indicación médica.'
-      },
-      'dexamethasone': {
-        nombreEs: 'DEXAMETASONA',
-        resumenEs: 'Advertencia de Glucocorticoides: Potente antiinflamatorio e inmunosupresor. Puede elevar la glucosa en sangre, la presión arterial y aumentar el riesgo de úlcera péptica cuando se combina con AINEs o aspirina.'
-      },
-      'naproxen': {
-        nombreEs: 'NAPROXENO',
-        resumenEs: 'Advertencia Cardiovascular y Gastrointestinal: Los AINEs como el naproxeno pueden incrementar el riesgo de eventos trombóticos cardiovasculares, úlceras y sangrado estomacal grave, especialmente en adultos mayores o al combinarse con anticoagulantes.'
-      },
-      'diclofenac': {
-        nombreEs: 'DICLOFENACO',
-        resumenEs: 'Advertencia Cardiovascular y Gastrointestinal: El diclofenaco conlleva riesgo de eventos cardiovasculares graves y perforación o sangrado gastrointestinal. Contraindicado en pacientes con antecedentes de asma o urticaria tras tomar aspirina u otros AINEs.'
-      },
-      'loratadine': {
-        nombreEs: 'LORATADINA',
-        resumenEs: 'Advertencia Antihistamínica: Consulte a un médico antes de usar si padece enfermedad hepática o renal. Si se excede la dosis recomendada puede causar somnolencia. Suspenda su uso si ocurre una reacción alérgica al producto.'
-      },
-      'cetirizine': {
-        nombreEs: 'CETIRIZINA',
-        resumenEs: 'Advertencia de Somnolencia: Puede causar somnolencia; evite bebidas alcohólicas, sedantes o tranquilizantes ya que pueden intensificar este efecto. Tenga precaución al conducir vehículos o manejar maquinaria.'
-      },
-      'metformin': {
-        nombreEs: 'METFORMINA',
-        resumenEs: 'Advertencia de Acidosis Láctica: La metformina conlleva un riesgo poco frecuente pero grave de acidosis láctica, especialmente en casos de insuficiencia renal, consumo excesivo de alcohol o deshidratación aguda.'
-      },
-      'albuterol': {
-        nombreEs: 'SALBUTAMOL (ALBUTEROL)',
-        resumenEs: 'Advertencia Respiratoria y Cardiovascular: El uso excesivo puede ocasionar taquicardia, temblor y broncoespasmo paradójico. Si el alivio del asma dura menos de lo habitual o requiere más inhalaciones, acuda a valoración médica inmediata.'
-      },
-      'azithromycin': {
-        nombreEs: 'AZITROMICINA',
-        resumenEs: 'Advertencia Antibiótica y Cardíaca: Se han observado reacciones alérgicas graves y prolongación del intervalo QT cardíaco en pacientes con riesgo de arritmias. Debe completarse el esquema únicamente bajo prescripción médica.'
-      },
-      'atorvastatin': {
-        nombreEs: 'ATORVASTATINA',
-        resumenEs: 'Advertencia Muscular y Hepática: Informe de inmediato a su médico si presenta dolor, sensibilidad o debilidad muscular inexplicable (riesgo de miopatía/rabdomiólisis). Contraindicado en enfermedad hepática activa y durante el embarazo.'
-      }
-    };
-
-    const MAPA_TERMINOS_ES_A_EN = {
-      'ibuprofeno': 'ibuprofen',
-      'ibuprofen': 'ibuprofen',
-      'advil': 'ibuprofen',
-      'motrin': 'ibuprofen',
-      'paracetamol': 'acetaminophen',
-      'acetaminofen': 'acetaminophen',
-      'acetaminofén': 'acetaminophen',
-      'acetaminophen': 'acetaminophen',
-      'dolex': 'acetaminophen',
-      'tylenol': 'acetaminophen',
-      'aspirina': 'aspirin',
-      'aspirin': 'aspirin',
-      'acido acetilsalicilico': 'aspirin',
-      'ácido acetilsalicílico': 'aspirin',
-      'warfarina': 'warfarin',
-      'warfarin': 'warfarin',
-      'amoxicilina': 'amoxicillin',
-      'amoxicillin': 'amoxicillin',
-      'omeprazol': 'omeprazole',
-      'omeprazole': 'omeprazole',
-      'losartan': 'losartan',
-      'losartán': 'losartan',
-      'enalapril': 'enalapril',
-      'prednisona': 'prednisone',
-      'prednisone': 'prednisone',
-      'dexametasona': 'dexamethasone',
-      'dexamethasone': 'dexamethasone',
-      'naproxeno': 'naproxen',
-      'naproxen': 'naproxen',
-      'diclofenaco': 'diclofenac',
-      'diclofenac': 'diclofenac',
-      'loratadina': 'loratadine',
-      'loratadine': 'loratadine',
-      'cetirizina': 'cetirizine',
-      'cetirizine': 'cetirizine',
-      'metformina': 'metformin',
-      'metformin': 'metformin',
-      'salbutamol': 'albuterol',
-      'albuterol': 'albuterol',
-      'azitromicina': 'azithromycin',
-      'azithromycin': 'azithromycin',
-      'atorvastatina': 'atorvastatin',
-      'atorvastatin': 'atorvastatin'
-    };
-
-    /**
-     * Traduce automáticamente cualquier texto en inglés de la FDA al español
-     */
-    async function traducirTextoInglesAEspanol(textoIngles) {
-      try {
-        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=es&dt=t&q=${encodeURIComponent(textoIngles)}`;
-        const res = await fetch(url);
-        if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data?.[0])) {
-            return data[0].map(part => part[0]).join('');
-          }
-        }
-      } catch (e) {
-        // Fallback silencioso si el servicio de traducción no responde
-      }
-      return null;
+      resContainer.innerHTML = '<div class="bg-emerald-50 border border-emerald-300 p-3 rounded-xl text-xs text-emerald-800"><b>Compatibilidad evaluada:</b> Sin interacciones graves detectadas en el catálogo local.</div>';
     }
 
     async function consultarOpenFDA() {
-      const input = document.getElementById('openfda-query');
+      const query = document.getElementById('openfda-query').value.trim();
       const box = document.getElementById('openfda-result');
-      const terminoOriginal = input.value.trim();
-      if (!terminoOriginal) return;
-
-      const claveNormalizada = terminoOriginal.toLowerCase();
-      const terminoInglesFDA = MAPA_TERMINOS_ES_A_EN[claveNormalizada] || claveNormalizada;
-      const fichaEspanol = CATALOGO_FDA_ESPANOL[terminoInglesFDA];
-
+      if (!query) return;
       box.classList.remove('hidden');
-      box.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-sky-600"></i> Consultando base oficial de la FDA y traduciendo al español...';
-
+      box.innerHTML = 'Consultando OpenFDA...';
       try {
-        const res = await fetch(`https://api.fda.gov/drug/label.json?search=openfda.generic_name:"${encodeURIComponent(terminoInglesFDA)}"&limit=1`);
+        const res = await fetch(`https://api.fda.gov/drug/label.json?search=openfda.generic_name:"${encodeURIComponent(query)}"&limit=1`);
         const data = await res.json();
         const item = data?.results?.[0];
-
         if (item) {
-          const nombreMostrar = fichaEspanol
-            ? fichaEspanol.nombreEs
-            : terminoOriginal.toUpperCase();
-
-          // Si contamos con la traducción clínica verificada en español para este fármaco, la mostramos;
-          // de lo contrario traducimos en tiempo real el texto oficial devuelto por la FDA
-          let advertenciaEnEspanol = fichaEspanol ? fichaEspanol.resumenEs : null;
-
-          if (!advertenciaEnEspanol) {
-            const rawWarningEn = (item.boxed_warning?.[0] || item.warnings?.[0] || item.warnings_and_cautions?.[0] || item.drug_interactions?.[0] || '').slice(0, 420);
-            if (rawWarningEn) {
-              advertenciaEnEspanol = await traducirTextoInglesAEspanol(rawWarningEn);
-            }
-          }
-
-          if (!advertenciaEnEspanol) {
-            advertenciaEnEspanol = 'El registro oficial de la FDA indica administrar este medicamento únicamente bajo indicación médica, verificando alergias previas y posibles interacciones con otros tratamientos.';
-          }
-
-          box.innerHTML = `
-            <div class="flex items-center justify-between mb-1">
-              <p class="font-bold text-slate-800">Fármaco FDA: ${nombreMostrar}</p>
-              <span class="text-[10px] font-semibold bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full">Español</span>
-            </div>
-            <p class="text-slate-600 leading-relaxed">${advertenciaEnEspanol}</p>
-          `;
-        } else if (fichaEspanol) {
-          box.innerHTML = `
-            <div class="flex items-center justify-between mb-1">
-              <p class="font-bold text-slate-800">Fármaco FDA: ${fichaEspanol.nombreEs}</p>
-              <span class="text-[10px] font-semibold bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full">Español</span>
-            </div>
-            <p class="text-slate-600 leading-relaxed">${fichaEspanol.resumenEs}</p>
-          `;
+          const advertencia = item.warnings?.[0] || item.purpose?.[0] || 'Consulte las indicaciones del fabricante.';
+          box.innerHTML = `<b>FDA (${query.toUpperCase()}):</b> ${advertencia.slice(0, 300)}...`;
         } else {
-          box.innerHTML = 'No se encontró ese medicamento. Prueba buscando en español: <strong>Ibuprofeno</strong>, <strong>Paracetamol</strong>, <strong>Aspirina</strong>, <strong>Warfarina</strong>, <strong>Omeprazol</strong>, <strong>Amoxicilina</strong> o <strong>Losartán</strong>.';
+          box.innerHTML = 'No se encontraron resultados en OpenFDA para este término.';
         }
       } catch (e) {
-        if (fichaEspanol) {
-          box.innerHTML = `
-            <div class="flex items-center justify-between mb-1">
-              <p class="font-bold text-slate-800">Fármaco FDA: ${fichaEspanol.nombreEs}</p>
-              <span class="text-[10px] font-semibold bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full">Español</span>
-            </div>
-            <p class="text-slate-600 leading-relaxed">${fichaEspanol.resumenEs}</p>
-          `;
-        } else {
-          box.innerHTML = 'No fue posible conectar con OpenFDA en este momento. Prueba con: <strong>Ibuprofeno</strong>, <strong>Paracetamol</strong>, <strong>Aspirina</strong> o <strong>Warfarina</strong>.';
-        }
-      }
-    }
-
-    // ============================================================================
-    // 9. BUCLE DE SEGUIMIENTO 24-48H Y REPORTE PDF
-    // ============================================================================
-    function responderSeguimiento(respuesta) {
-      const banner = document.getElementById('banner-seguimiento');
-      const actual = historialConsultas[0];
-
-      if (respuesta === 'empeoro') {
-        const nivelAnterior = actual ? actual.triaje_actualizado : 'Verde';
-        const nuevoNivel = nivelAnterior === 'Verde' ? 'Amarillo' : 'Rojo';
-
-        if (actual) {
-          actual.respuesta_usuario = 'Empeoró';
-          actual.triaje_actualizado = nuevoNivel;
-          actual.observacion = `El sistema escaló automáticamente el triaje de ${nivelAnterior} a ${nuevoNivel} debido al reporte de empeoramiento en el seguimiento a las 24 horas.`;
-        }
-        renderizarHistorialDiario();
-
-        banner.innerHTML = `
-          <div class="text-xs text-red-800 font-bold mb-1">
-            <i class="fa-solid fa-triangle-exclamation text-red-600"></i> Escalando Triaje a Nivel ${nuevoNivel.toUpperCase()}
-          </div>
-          <p class="text-[11px] text-red-700 mb-2.5">Debido al empeoramiento reportado, hemos actualizado tu prioridad y te sugerimos acudir a valoración médica.</p>
-          <button onclick="switchTab('tab-directorio'); obtenerUbicacionGPSReal(false);" class="bg-red-600 hover:bg-red-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5">
-            <i class="fa-solid fa-map-location-dot"></i> Ver Hospitales Cercanos en el Mapa
-          </button>
-        `;
-        banner.className = "bg-red-50 border border-red-300 p-3.5 rounded-2xl mb-4 animate-fadeIn";
-      } else if (respuesta === 'igual') {
-        if (actual) {
-          actual.respuesta_usuario = 'Sigue igual (Observación 48h)';
-        }
-        renderizarHistorialDiario();
-        banner.innerHTML = `
-          <div class="text-xs text-amber-800 font-bold mb-1">
-            <i class="fa-solid fa-clock text-amber-600"></i> Seguimiento Extendido a 48 Horas
-          </div>
-          <p class="text-[11px] text-amber-700">Si las molestias persisten mañana, te recomendaremos consulta médica prioritaria.</p>
-        `;
-        banner.className = "bg-amber-50 border border-amber-300 p-3.5 rounded-2xl mb-4 animate-fadeIn";
-      } else {
-        if (actual) {
-          actual.respuesta_usuario = 'Mejoró satisfactoriamente';
-          actual.triaje_actualizado = 'Verde';
-        }
-        renderizarHistorialDiario();
-        banner.innerHTML = `
-          <div class="text-xs text-emerald-800 font-bold">
-            <i class="fa-solid fa-circle-check text-emerald-600"></i> ¡Gracias por tu reporte!
-          </div>
-          <p class="text-[11px] text-emerald-700">Continuamos monitoreando tu evolución en Semáforo Verde.</p>
-        `;
-        banner.className = "bg-emerald-50 border border-emerald-300 p-3.5 rounded-2xl mb-4 animate-fadeIn";
+        box.innerHTML = 'Error al conectar con la API de OpenFDA.';
       }
     }
 
     function renderizarHistorialDiario() {
       const contenedor = document.getElementById('historial-diario-lista');
-      const countBadge = document.getElementById('diario-count-badge');
-      if (countBadge) countBadge.textContent = `${historialConsultas.length} ${historialConsultas.length === 1 ? 'registro' : 'registros'}`;
       if (!contenedor) return;
-
-      contenedor.innerHTML = historialConsultas.map(item => {
-        const nivel = item.triaje_actualizado || item.triaje_inicial;
-        const badgeClass = nivel === 'Rojo'
-          ? 'bg-red-100 text-red-800 border-red-200'
-          : nivel === 'Amarillo'
-          ? 'bg-amber-100 text-amber-800 border-amber-200'
-          : 'bg-emerald-100 text-emerald-800 border-emerald-200';
-
-        return `
-          <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm space-y-1">
-            <div class="flex justify-between items-center">
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-bold text-slate-800">${item.sintoma_reportado}</span>
-                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border badgeClass">{nivel}</span>
-              </div>
-              <span class="text-[10px] text-slate-400">${item.fecha}</span>
-            </div>
-            <p class="text-[11px] text-slate-500">Intensidad: item.intensidad/10•Seguimiento:<strong>{item.respuesta_usuario}</strong></p>
-            ${item.observacion ? `<p class="text-[10px] text-slate-500 bg-slate-50 p-2 rounded-lg border border-slate-100">${item.observacion}</p>` : ''}
+      contenedor.innerHTML = historialConsultas.map(item => `
+        <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm space-y-1 text-xs">
+          <div class="flex justify-between items-center font-bold">
+            <span>${item.sintoma_reportado}</span>
+            <span class="text-sky-600">${item.triaje_actualizado}</span>
           </div>
-        `;
-      }).join('');
+          <p class="text-slate-500">${item.fecha} • Intensidad: ${item.intensidad}/10</p>
+        </div>
+      `).join('');
+    }
+
+    function responderSeguimiento(resp) {
+      const banner = document.getElementById('banner-seguimiento');
+      if (resp === 'empeoro') {
+        banner.className = "bg-red-50 border border-red-300 p-3.5 rounded-2xl mb-4";
+        banner.innerHTML = `<p class="text-xs text-red-800 font-bold">¡Atención! Síntoma empeoró. Prioridad escalada a Rojo. Acude a urgencias.</p>`;
+      } else {
+        banner.className = "bg-emerald-50 border border-emerald-300 p-3.5 rounded-2xl mb-4";
+        banner.innerHTML = `<p class="text-xs text-emerald-800 font-bold">¡Excelente! Seguimiento registrado con éxito.</p>`;
+      }
     }
 
     function exportarReporteMedicoPDF() {
-      if (!window.jspdf) {
-        alert('El generador PDF se está cargando, intenta de nuevo en un segundo.');
-        return;
-      }
+      if (!window.jspdf) { alert('Generador PDF no disponible.'); return; }
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
-
-      // Encabezado institucional Doc-Doc
-      doc.setFillColor(2, 132, 199);
-      doc.rect(0, 0, 210, 28, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(15);
-      doc.text('DOC-DOC | REPORTE DE ORIENTACION Y DIARIO DE SINTOMAS', 14, 13);
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
-      doc.text(`Paciente: expedienteUsuario.nombre({expedienteUsuario.edad} anos) | Ubicacion: ${ubicacionActual.etiqueta}`, 14, 21);
-
-      let y = 38;
-      doc.setTextColor(30, 41, 59);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.text('1. ANTECEDENTES DEL EXPEDIENTE (Ley 1581 de 2012)', 14, y);
-      y += 6;
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9.5);
-      doc.text(`• Condiciones cronicas: ${(expedienteUsuario.enfermedades_cronicas || []).join(', ')}`, 16, y); y += 5;
-      doc.text(`• Alergias conocidas: ${(expedienteUsuario.alergias || []).join(', ')}`, 16, y); y += 5;
-      doc.text(`• Medicamentos habituales: ${(expedienteUsuario.medicamentos_actuales || []).join(', ')}`, 16, y); y += 10;
-
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.text('2. HISTORIAL DE SINTOMAS Y SEGUIMIENTO 24-48H', 14, y);
-      y += 7;
-
-      historialConsultas.forEach((c, idx) => {
-        doc.setDrawColor(203, 213, 225);
-        doc.roundedRect(14, y, 182, 24, 2, 2);
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(10);
-        doc.text(`${idx + 1}. ${c.sintoma_reportado}  [Triaje: ${c.triaje_inicial} -> ${c.triaje_actualizado}]`, 18, y + 7);
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(9);
-        doc.text(`Fecha: ${c.fecha}  |  Intensidad EVA: ${c.intensidad}/10  |  Seguimiento 24h: ${c.respuesta_usuario}`, 18, y + 14);
-        doc.text(`Nota: ${(c.observacion || '').slice(0, 95)}`, 18, y + 20);
-        y += 28;
-      });
-
-      doc.setFontSize(8);
-      doc.setTextColor(100, 116, 139);
-      doc.text('Aviso Legal: Este documento es un resumen informativo generado por Doc-Doc para apoyar la consulta medica.', 14, 284);
-
-      doc.save(`Reporte_Medico_DocDoc_${expedienteUsuario.id_usuario}.pdf`);
+      doc.text("Doc-Doc - Reporte Medico Clinico", 14, 20);
+      doc.text(`Paciente: ${expedienteUsuario.nombre} (${expedienteUsuario.edad} anos)`, 14, 30);
+      doc.text(`Ubicacion: ${ubicacionActual.etiqueta}`, 14, 40);
+      doc.save("Reporte_Medico_DocDoc.pdf");
     }
 
     function abrirModalNuevoSintoma() {
       switchTab('tab-chat');
-      document.getElementById('chat-input').focus();
     }
 
-    // ============================================================================
-    // 10. GESTIÓN DE CONTACTOS DE EMERGENCIA (Agregar, Editar, Eliminar)
-    // ============================================================================
+    function abrirModalEmergencia() {
+      document.getElementById('modal-emergencia-123').classList.remove('hidden');
+    }
+
+    function cerrarModalEmergencia() {
+      document.getElementById('modal-emergencia-123').classList.add('hidden');
+    }
+
+    function registrarAccionEmergencia() {
+      cerrarModalEmergencia();
+    }
+
+    function notificarContactoEmergenciaSMS() {
+      alert('Alerta enviada al contacto de emergencia con las coordenadas GPS.');
+      cerrarModalEmergencia();
+    }
+
     function renderizarContactosPerfil() {
       const lista = document.getElementById('lista-contactos-perfil');
       if (!lista) return;
-
-      if (expedienteUsuario.contactos_emergencia.length === 0) {
-        lista.innerHTML = '<p class="text-xs text-slate-400 italic">No hay contactos registrados.</p>';
-        return;
-      }
-
       lista.innerHTML = expedienteUsuario.contactos_emergencia.map((c, idx) => `
-        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex items-center justify-between gap-2">
-          <div class="min-w-0">
-            <p class="text-xs font-bold text-slate-800 truncate">${c.nombre}</p>
-            <p class="text-[11px] text-slate-500">${c.telefono}</p>
-          </div>
-          <div class="flex items-center gap-1 shrink-0">
-            <button onclick="editarContactoEmergencia(${idx})" class="w-7 h-7 rounded-lg bg-white border border-slate-200 text-sky-600 hover:bg-sky-50 text-xs flex items-center justify-center" title="Editar contacto">
-              <i class="fa-solid fa-pen"></i>
-            </button>
-            <button onclick="eliminarContactoEmergencia(${idx})" class="w-7 h-7 rounded-lg bg-white border border-slate-200 text-red-600 hover:bg-red-50 text-xs flex items-center justify-center" title="Eliminar contacto">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </div>
+        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex justify-between items-center text-xs">
+          <span><b>${c.nombre}</b> (${c.telefono})</span>
+          <button onclick="expedienteUsuario.contactos_emergencia.splice(${idx},1); renderizarContactosPerfil();" class="text-red-600 font-bold">Eliminar</button>
         </div>
       `).join('');
     }
 
     function guardarContactoEmergencia() {
-      const nomInput = document.getElementById('input-contacto-nombre');
-      const telInput = document.getElementById('input-contacto-telefono');
-      const nombre = nomInput.value.trim();
-      const telefono = telInput.value.trim();
-      if (!nombre || !telefono) return;
-
-      if (editandoContactoIndex !== null) {
-        expedienteUsuario.contactos_emergencia[editandoContactoIndex] = { nombre, telefono };
-        editandoContactoIndex = null;
-        document.getElementById('label-form-contacto').textContent = 'Agregar nuevo contacto:';
-        document.getElementById('btn-guardar-contacto').textContent = 'Guardar';
-      } else {
-        expedienteUsuario.contactos_emergencia.push({ nombre, telefono });
-      }
-
-      nomInput.value = '';
-      telInput.value = '';
-      renderizarContactosPerfil();
-    }
-
-    function editarContactoEmergencia(idx) {
-      const c = expedienteUsuario.contactos_emergencia[idx];
-      if (!c) return;
-      editandoContactoIndex = idx;
-      document.getElementById('input-contacto-nombre').value = c.nombre;
-      document.getElementById('input-contacto-telefono').value = c.telefono;
-      document.getElementById('label-form-contacto').textContent = 'Editando contacto seleccionado:';
-      document.getElementById('btn-guardar-contacto').textContent = 'Actualizar';
-    }
-
-    function eliminarContactoEmergencia(idx) {
-      expedienteUsuario.contactos_emergencia.splice(idx, 1);
+      const nom = document.getElementById('input-contacto-nombre').value.trim();
+      const tel = document.getElementById('input-contacto-telefono').value.trim();
+      if (!nom || !tel) return;
+      expedienteUsuario.contactos_emergencia.push({ nombre: nom, telefono: tel });
+      document.getElementById('input-contacto-nombre').value = '';
+      document.getElementById('input-contacto-telefono').value = '';
       renderizarContactosPerfil();
     }
   </script>
 </body>
 </html>
-

@@ -1325,9 +1325,10 @@
 
     const GEMINI_CONFIG = Object.assign({
       apiKey: '',
-      // Primero el más rápido (RNF-06: < 2.5 s por turno); si falla se intenta el siguiente.
-      modelos: ['gemini-3.5-flash-lite', 'gemini-3.8-flash'],
-      timeoutMs: 15000
+      // Primero el más rápido (RNF-06: < 2.5 s por turno); si uno está saturado (503) se reintenta y luego se pasa al siguiente.
+      modelos: ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-2.5-flash-lite', 'gemini-flash-lite-latest', 'gemini-2.5-flash', 'gemini-3.5-flash'],
+      reintentosPorModelo: 2,
+      timeoutMs: 12000
     }, window.DOC_DOC_CONFIG || {});
 
     const GEMINI_STORAGE_KEY = 'docdoc_gemini_api_key';
@@ -1395,14 +1396,15 @@
       { tipo: 'cardio', patrones: ['dolor de pecho', 'dolor en el pecho', 'opresion en el pecho', 'presion en el pecho', 'dolor toracico', 'infarto'],
         titulo: 'Posible Compromiso Cardíaco Agudo', especialidad: 'Urgencias / Cardiología',
         descripcion: 'El dolor u opresión en el pecho es una señal de alarma. Requiere atención inmediata.' },
-      { tipo: 'respiratorio', patrones: ['no puedo respirar', 'me ahogo', 'me estoy ahogando', 'falta de aire', 'labios morados', 'se me cierra la garganta'],
+      { tipo: 'respiratorio', patrones: ['no puedo respirar', 'no respiro', 'me ahogo', 'me estoy ahogando', 'falta de aire', 'me falta el aire', 'labios morados', 'se me cierra la garganta'],
         titulo: 'Dificultad Respiratoria Aguda', especialidad: 'Urgencias',
         descripcion: 'La dificultad para respirar requiere valoración de urgencia inmediata.' },
-      { tipo: 'neuro', patrones: ['me desmaye', 'desmayo', 'perdi el conocimiento', 'inconsciente', 'convulsion', 'rigidez en el cuello', 'cuello rigido',
+      { tipo: 'neuro', patrones: ['desmay', 'perdi el conocimiento', 'inconsciente', 'convuls', 'rigidez en el cuello', 'cuello rigido',
                                  'no puedo mover', 'paralisis', 'cara caida', 'boca torcida', 'no puedo hablar', 'peor dolor de cabeza de mi vida'],
         titulo: 'Señal de Alarma Neurológica', especialidad: 'Urgencias / Neurología',
         descripcion: 'Estos síntomas pueden indicar una condición neurológica grave. Requiere atención inmediata.' },
-      { tipo: 'sangrado', patrones: ['hemorragia', 'sangrado abundante', 'vomito con sangre', 'vomitando sangre', 'no para de sangrar'],
+      { tipo: 'sangrado', patrones: ['hemorragia', 'sangrado abundante', 'vomito con sangre', 'vomitando sangre', 'no para de sangrar', 'heces negras', 'popo negra'],
+        combinaciones: [['vomit', 'sangr'], ['tos', 'sangr'], ['escup', 'sangr'], ['hece', 'sangr'], ['popo', 'sangr'], ['evacu', 'sangr'], ['excremento', 'sangr']],
         titulo: 'Sangrado Importante', especialidad: 'Urgencias',
         descripcion: 'Un sangrado abundante o con vómito requiere atención inmediata.' },
       { tipo: 'intoxicacion', patrones: ['sobredosis', 'envenen', 'intoxicac'],
@@ -1412,7 +1414,10 @@
 
     function detectarSenalAlarma(texto) {
       const t = normalizarTexto(texto);
-      return REGLAS_ALARMA.find(r => r.patrones.some(p => t.includes(p))) || null;
+      return REGLAS_ALARMA.find(r =>
+        r.patrones.some(p => t.includes(p)) ||
+        (r.combinaciones || []).some(par => par.every(raiz => t.includes(raiz)))
+      ) || null;
     }
 
     // ---------- 2) Gemini ----------
@@ -1492,15 +1497,22 @@ Al cerrar: finalizado=true y llena titulo, descripcion, causas, cuidados, para_e
       }
     }
 
+    const esperar = ms => new Promise(r => setTimeout(r, ms));
+
     async function consultarGemini(apiKey) {
       let ultimoError = null;
       for (const modelo of GEMINI_CONFIG.modelos) {
-        try {
-          return await llamarGemini(modelo, apiKey);
-        } catch (e) {
-          ultimoError = e;
-          console.warn(`[Doc-Doc] Falló ${modelo}:`, e.message);
-          if (e.status === 401 || e.status === 403) break; // key inválida: no tiene caso probar otro modelo
+        for (let intento = 1; intento <= (GEMINI_CONFIG.reintentosPorModelo || 1); intento++) {
+          try {
+            return await llamarGemini(modelo, apiKey);
+          } catch (e) {
+            ultimoError = e;
+            console.warn(`[Doc-Doc] Falló ${modelo} (intento ${intento}):`, e.message);
+            if (e.status === 401 || e.status === 403) throw e;          // key inválida: no tiene caso seguir
+            const saturado = [429, 500, 503].includes(e.status) || e.name === 'AbortError';
+            if (!saturado) break;                                        // otro error (404, JSON...): siguiente modelo
+            await esperar(400 * intento);                                // saturación temporal: reintenta
+          }
         }
       }
       throw ultimoError;
@@ -1523,7 +1535,7 @@ Al cerrar: finalizado=true y llena titulo, descripcion, causas, cuidados, para_e
       if (sintomaId) {
         iniciarSintoma(sintomaId, true);
       } else {
-        agregarMensaje('bot', `<p class="text-slate-700">Para orientarte mejor, selecciona uno de los botones rápidos de síntomas abajo e iniciaremos una evaluación guiada por semáforo.</p>`);
+        agregarMensaje('bot', `<p class="text-slate-700">${motivo && motivo !== 'sin API key' ? 'El asistente con IA está muy ocupado en este momento. ' : ''}Para orientarte, selecciona uno de los botones rápidos de síntomas abajo e iniciaremos una evaluación guiada por semáforo.</p>`);
       }
     }
 

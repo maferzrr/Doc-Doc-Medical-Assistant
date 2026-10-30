@@ -1526,7 +1526,8 @@ Responde SIEMPRE con el JSON del esquema.`;
         para_el_medico: { type: 'STRING', description: '1-2 frases con datos clave para el médico.' },
         especialidad:   { type: 'STRING', description: 'A quién acudir, 1-3 palabras.' }
       },
-      required: ['respuesta', 'finalizado', 'triaje']
+      required: ['respuesta', 'finalizado', 'triaje'],
+      propertyOrdering: ['respuesta', 'opciones', 'finalizado', 'triaje', 'titulo', 'descripcion', 'causas', 'cuidados', 'senales_alarma', 'para_el_medico', 'especialidad']
     };
 
     // Ajustes por familia de modelo (los 2.5 aceptan thinkingBudget; 0 = respuesta rápida)
@@ -1565,11 +1566,73 @@ Responde SIEMPRE con el JSON del esquema.`;
         if (!texto) throw new Error('Respuesta vacía o bloqueada (' + (data?.candidates?.[0]?.finishReason || data?.promptFeedback?.blockReason || 'sin motivo') + ')');
         let json;
         try { json = JSON.parse(texto); }
-        catch (e) { const err = new Error('JSON incompleto: ' + e.message); err.status = 'JSON'; throw err; }
-        return { textoCrudo: texto, json, modelo };
+        catch (e) {
+          // El modelo a veces se "atora" repitiendo palabras y la respuesta se corta: rescatamos lo que sí sirve.
+          json = rescatarJSON(texto);
+          if (!json || !json.respuesta) { const err = new Error('JSON incompleto: ' + e.message); err.status = 'JSON'; throw err; }
+          console.info('[Doc-Doc] Respuesta rescatada de un JSON cortado (' + modelo + ')');
+        }
+        json = limpiarRespuesta(json);
+        return { textoCrudo: JSON.stringify(json), json, modelo };
       } finally {
         clearTimeout(timer);
       }
+    }
+
+    // Cierra un JSON cortado: prueba cerrar en el final y, si no, en cada coma anterior.
+    function rescatarJSON(texto) {
+      const cortes = []; const pila = []; let enCadena = false, escape = false;
+      for (let i = 0; i < texto.length; i++) {
+        const c = texto[i];
+        if (enCadena) { if (escape) escape = false; else if (c === '\\') escape = true; else if (c === '"') enCadena = false; continue; }
+        if (c === '"') enCadena = true;
+        else if (c === '{' || c === '[') pila.push(c);
+        else if (c === '}' || c === ']') pila.pop();
+        else if (c === ',') cortes.push({ pos: i, pila: pila.slice() });
+      }
+      const cerrar = p => p.slice().reverse().map(c => c === '{' ? '}' : ']').join('');
+      const intentos = [texto + (enCadena ? '"' : '') + cerrar(pila)];
+      for (let j = cortes.length - 1; j >= 0 && intentos.length < 40; j--) intentos.push(texto.slice(0, cortes[j].pos) + cerrar(cortes[j].pila));
+      for (const t of intentos) { try { return JSON.parse(t); } catch (e) {} }
+      return null;
+    }
+
+    // Quita repeticiones ("funcional y funcional y...") y limita el largo de cada campo.
+    function limpiarTexto(s, max) {
+      s = String(s ?? '').replace(/\s+/g, ' ').trim();
+      // Bucle típico: la misma secuencia de 3 palabras repetida 3+ veces seguidas -> se corta antes de la 2.ª repetición
+      const w = s.split(' ');
+      const norm = x => (x || '').toLowerCase().replace(/[^a-záéíóúñü0-9]/g, '');
+      for (let i = 0; i + 2 < w.length; i++) {
+        const tri = norm(w[i]) + ' ' + norm(w[i+1]) + ' ' + norm(w[i+2]);
+        const vistos = [];
+        for (let j = i + 1; j + 2 < w.length && j < i + 40; j++) {
+          if (norm(w[j]) + ' ' + norm(w[j+1]) + ' ' + norm(w[j+2]) === tri) vistos.push(j);
+        }
+        // Solo si se repite en ciclos exactos y cortos (un bucle), no frases normales como "si el dolor..., si el dolor..."
+        const periodo = vistos.length >= 2 ? vistos[0] - i : 0;
+        if (vistos.length >= 2 && periodo <= 6 && vistos[1] - vistos[0] === periodo) {
+          s = w.slice(0, vistos[0]).join(' ');
+          for (let k = 0; k < 3; k++) s = s.replace(/[\s,;:]+$/, '').replace(/\s+(y|o|e|de|del|la|el|en|con|por|que)$/i, '');
+          break;
+        }
+      }
+      if (s.length > max) s = s.slice(0, max).replace(/\s+\S*$/, '') + '…';
+      return s;
+    }
+    function limpiarRespuesta(j) {
+      const lista = (a, n, max) => (Array.isArray(a) ? a : []).map(x => limpiarTexto(x, max)).filter(Boolean).slice(0, n);
+      return Object.assign({}, j, {
+        respuesta: limpiarTexto(j.respuesta, 900),
+        opciones: lista(j.opciones, 4, 60),
+        titulo: j.titulo ? limpiarTexto(j.titulo, 2000) : j.titulo,   // repararCierre/tituloCorto lo ajustan después
+        descripcion: j.descripcion ? limpiarTexto(j.descripcion, 350) : j.descripcion,
+        causas: lista(j.causas, 3, 160),
+        cuidados: lista(j.cuidados, 5, 180),
+        senales_alarma: lista(j.senales_alarma, 4, 160),
+        para_el_medico: j.para_el_medico ? limpiarTexto(j.para_el_medico, 300) : j.para_el_medico,
+        especialidad: j.especialidad ? limpiarTexto(j.especialidad, 40) : j.especialidad
+      });
     }
 
     const esperar = ms => new Promise(r => setTimeout(r, ms));

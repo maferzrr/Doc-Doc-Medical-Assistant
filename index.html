@@ -1388,7 +1388,22 @@
         badge.className = 'text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200';
       }
     }
-    window.addEventListener('DOMContentLoaded', actualizarBadgeGemini);
+    // Link de activación: .../#key=TU_API_KEY  -> guarda la key en este navegador y la borra de la barra de direcciones.
+    // El fragmento (#...) nunca se envía a GitHub ni a ningún servidor.
+    function activarKeyDesdeLink() {
+      const m = (location.hash || '').match(/[#&]key=([^&]+)/);
+      if (!m) return;
+      const key = decodeURIComponent(m[1]).trim();
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+      if (key.length < 20) return;
+      try { localStorage.setItem(GEMINI_STORAGE_KEY, key); } catch (e) { GEMINI_CONFIG.apiKey = key; }
+      setTimeout(() => agregarMensaje('bot', `<p class="text-emerald-700 font-semibold">✅ Doc Chat con IA quedó activado en este dispositivo.</p>`), 300);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      activarKeyDesdeLink();
+      actualizarBadgeGemini();
+    });
 
     function escaparHTML(texto) {
       return String(texto ?? '')

@@ -1343,10 +1343,10 @@
     const GEMINI_CONFIG = Object.assign({
       apiKey: '',
       // Primero el más rápido (RNF-06: < 2.5 s por turno); si uno está saturado (503) se reintenta y luego se pasa al siguiente.
-      modelos: ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-flash-lite-latest', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite'],
+      modelos: ['gemini-2.5-flash', 'gemini-3.5-flash-lite', 'gemini-flash-lite-latest', 'gemini-3.1-flash-lite'],
       esperaRespaldoMs: 3500,   // si el modelo principal tarda más, se lanza el de respaldo en paralelo
       reintentosPorModelo: 2,
-      timeoutMs: 7000
+      timeoutMs: 12000
     }, window.DOC_DOC_CONFIG || {});
 
     const GEMINI_STORAGE_KEY = 'docdoc_gemini_api_key';
@@ -1515,14 +1515,14 @@ Responde SIEMPRE con el JSON del esquema.`;
       type: 'OBJECT',
       properties: {
         respuesta:      { type: 'STRING', description: 'Mensaje para el usuario.' },
-        opciones:       { type: 'ARRAY', items: { type: 'STRING' }, description: 'De 0 a 4 respuestas cortas sugeridas.' },
+        opciones:       { type: 'ARRAY', items: { type: 'STRING' }, maxItems: 4, description: 'De 0 a 4 respuestas cortas sugeridas (máx. 6 palabras).' },
         finalizado:     { type: 'BOOLEAN' },
         triaje:         { type: 'STRING', enum: ['Ninguno', 'Verde', 'Amarillo', 'Rojo'] },
         titulo:         { type: 'STRING', description: 'Nombre corto del cuadro, máximo 8 palabras.' },
         descripcion:    { type: 'STRING', description: '1 o 2 frases sencillas.' },
-        causas:         { type: 'ARRAY', items: { type: 'STRING' }, description: '2-3 posibles causas, una por elemento.' },
-        cuidados:       { type: 'ARRAY', items: { type: 'STRING' }, description: '3-5 acciones concretas, una por elemento.' },
-        senales_alarma: { type: 'ARRAY', items: { type: 'STRING' }, description: '2-4 señales para ir a urgencias.' },
+        causas:         { type: 'ARRAY', items: { type: 'STRING' }, maxItems: 3, description: '2-3 posibles causas, una por elemento.' },
+        cuidados:       { type: 'ARRAY', items: { type: 'STRING' }, maxItems: 5, description: '3-5 acciones concretas, una por elemento.' },
+        senales_alarma: { type: 'ARRAY', items: { type: 'STRING' }, maxItems: 4, description: '2-4 señales para ir a urgencias.' },
         para_el_medico: { type: 'STRING', description: '1-2 frases con datos clave para el médico.' },
         especialidad:   { type: 'STRING', description: 'A quién acudir, 1-3 palabras.' }
       },
@@ -1533,7 +1533,7 @@ Responde SIEMPRE con el JSON del esquema.`;
     function configModelo(modelo) {
       const base = {
         temperature: 0.4,
-        maxOutputTokens: 1400,
+        maxOutputTokens: 2048,
         responseMimeType: 'application/json',
         responseSchema: ESQUEMA_RESPUESTA_GEMINI
       };
@@ -1563,7 +1563,10 @@ Responde SIEMPRE con el JSON del esquema.`;
         }
         const texto = (data?.candidates?.[0]?.content?.parts || []).filter(p => !p.thought).map(p => p.text || '').join('');
         if (!texto) throw new Error('Respuesta vacía o bloqueada (' + (data?.candidates?.[0]?.finishReason || data?.promptFeedback?.blockReason || 'sin motivo') + ')');
-        return { textoCrudo: texto, json: JSON.parse(texto), modelo };
+        let json;
+        try { json = JSON.parse(texto); }
+        catch (e) { const err = new Error('JSON incompleto: ' + e.message); err.status = 'JSON'; throw err; }
+        return { textoCrudo: texto, json, modelo };
       } finally {
         clearTimeout(timer);
       }
@@ -1582,7 +1585,7 @@ Responde SIEMPRE con el JSON del esquema.`;
             ultimoError = e;
             console.warn(`[Doc-Doc] Falló ${modelo} (intento ${intento}):`, e.message);
             if (e.status === 401 || e.status === 403) throw e;          // key inválida: no tiene caso seguir
-            if (![429, 500, 503].includes(e.status)) break;              // timeout, 404, JSON...: siguiente modelo
+            if (![429, 500, 503, 'JSON'].includes(e.status)) break;      // timeout, 404...: siguiente modelo
             await esperar(300 * intento);                                // saturación temporal: reintenta
           }
         }
@@ -1695,10 +1698,18 @@ Responde SIEMPRE con el JSON del esquema.`;
       enviarTextoChat(texto);
     }
 
-    async function enviarTextoChat(texto) {
+    let ultimoTextoFallido = null;
+
+    function reintentarUltimo(btn) {
+      if (!ultimoTextoFallido || geminiOcupado) return;
+      btn?.closest('.animate-fadeIn')?.remove();
+      enviarTextoChat(ultimoTextoFallido, { sinBurbuja: true });
+    }
+
+    async function enviarTextoChat(texto, { sinBurbuja = false } = {}) {
       if (!texto || geminiOcupado) return;
       document.querySelectorAll('#chat-messages .opciones-rapidas').forEach(el => el.remove());
-      agregarMensaje('usuario', escaparHTML(texto));
+      if (!sinBurbuja) agregarMensaje('usuario', escaparHTML(texto));
       entrevistaClinicaActiva = null;
 
       // 1) Señales de alarma: Rojo inmediato, sin LLM (RN-02).
@@ -1749,7 +1760,20 @@ Responde SIEMPRE con el JSON del esquema.`;
       } catch (e) {
         quitarEscribiendo();
         historialChatGemini.pop(); // quita el mensaje que no tuvo respuesta
-        flujoRespaldoSinIA(texto, e.message);
+        if (e.status === 401 || e.status === 403) {
+          agregarMensaje('bot', `<p class="text-slate-700">La API key de Gemini no es válida o no tiene permisos. Revísala en <b>Perfil → Doc Chat con IA</b>. Mientras tanto te guío con preguntas.</p>`);
+          flujoRespaldoSinIA(texto, e.message);
+        } else if (historialChatGemini.length) {
+          // A mitad de una entrevista: no perder la conversación
+          ultimoTextoFallido = texto;
+          agregarMensaje('bot', `<p class="text-slate-700">Los servidores de IA están muy ocupados en este momento y no alcancé a responder.</p>
+            <div class="flex gap-2 pt-2">
+              <button onclick="reintentarUltimo(this)" class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-3 py-1.5 rounded-xl text-xs">Reintentar</button>
+              <button onclick="nuevaConsultaChat()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-3 py-1.5 rounded-xl text-xs">Empezar de nuevo</button>
+            </div>`);
+        } else {
+          flujoRespaldoSinIA(texto, e.message);
+        }
       } finally {
         geminiOcupado = false;
       }
